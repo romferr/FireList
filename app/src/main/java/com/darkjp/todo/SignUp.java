@@ -1,8 +1,5 @@
 package com.darkjp.todo;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,6 +9,9 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -39,6 +39,7 @@ public class SignUp extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
+        Log.i(TAG, "onCreate: reached");
 
         imgProfile = findViewById(R.id.signUp_imgProfile);
         pseudo = findViewById(R.id.signUp_pseudo);
@@ -64,12 +65,27 @@ public class SignUp extends AppCompatActivity {
                 String userEmail = email.getText().toString();
                 String userPassword = password.getText().toString();
 
-                createAccountForAuthentication(userEmail, userPassword);
+                if (userPseudo.equals("")){
+                    Toast.makeText(SignUp.this, "Please enter a pseudo", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if (userEmail.equals("") || !userEmail.contains("@") || !userEmail.contains(".")){
+                    Toast.makeText(SignUp.this, "Please enter a valid email", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if (userPassword.length() < 8 ){
+                    Toast.makeText(SignUp.this, "Password needs at least 8 characters", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                createAccountForAuthentication(userEmail, userPassword, userPseudo);
             }
         });
     }
 
-    private void createAccountForAuthentication(final String userEmail, String password) {
+    private void createAccountForAuthentication(final String userEmail, String password, final String userPseudo) {
         mAuth.createUserWithEmailAndPassword(userEmail, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
@@ -77,6 +93,13 @@ public class SignUp extends AppCompatActivity {
                     // Sign in success, update UI with the signed-in user's information
                     Log.d(TAG, "createUserWithEmail:success");
                     FirebaseUser user = mAuth.getCurrentUser();
+
+                    // add user and customs infos to database
+                    // probably not the best choice but "hey... who cares for now ?"
+                    if (user != null)
+                        createCustomUserInDatabase(user, userPseudo);
+                    // then get back to normal flow
+
                     Intent login = new Intent(SignUp.this, LoginActivity.class);
                     startActivity(login);
 
@@ -88,5 +111,16 @@ public class SignUp extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    private void createCustomUserInDatabase(FirebaseUser firebaseUser, String userPseudo) {
+        User user = new User(firebaseUser.getUid(), userPseudo, firebaseUser.getEmail());
+
+        database = FirebaseDatabase.getInstance();
+        dataRef = database.getReference("user_" + user.getId());
+
+        dataRef.setValue(user);
+        Log.d(TAG, "createCustomUserInDatabase: new user Created : " + firebaseUser.getUid());
+
     }
 }

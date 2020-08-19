@@ -2,16 +2,29 @@ package com.darkjp.todo;
 
 import com.google.firebase.auth.FirebaseUser;
 
+import java.util.ArrayList;
+import java.util.Objects;
+
 public class User {
-    private String pseudo, email, imgProfile;
-    private FirebaseUser userAuth;
+    private String id, pseudo, email, imgProfile;
+    private ArrayList <TaskList> taskList;
 
     public User() {
     }
 
-    public User(String pseudo, String email) {
+    public User(String id, String pseudo, String email) {
+        this.id = id;
         this.pseudo = pseudo;
         this.email = email;
+        this.taskList = new ArrayList<>();
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getPseudo() {
@@ -38,11 +51,35 @@ public class User {
         this.imgProfile = imgProfile;
     }
 
-    public FirebaseUser getUserAuth() {
-        return userAuth;
+    public ArrayList<TaskList> getTaskList() {
+        return taskList;
     }
 
-    public void setUserAuth(FirebaseUser userAuth) {
-        this.userAuth = userAuth;
+    public void setTaskList(ArrayList<TaskList> taskList) {
+        this.taskList = taskList;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id='" + id + '\'' +
+                ", pseudo='" + pseudo + '\'' +
+                ", email='" + email + '\'' +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return Objects.equals(id, user.id) &&
+                Objects.equals(pseudo, user.pseudo) &&
+                Objects.equals(email, user.email);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, pseudo, email);
     }
 }

@@ -1,32 +1,35 @@
 package com.darkjp.todo;
 
+import android.content.Intent;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.Intent;
-import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
-
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.List;
 
-public class DashboardActivity extends AppCompatActivity {
+public class DashboardActivity extends AppCompatActivity implements TaskListAdapter.OnTaskListClickListener {
+    private TextView pseudo;
     private Button logOut;
     private RecyclerView recyclerViewListToSelect;
     private RecyclerView.LayoutManager layoutManagerListToSelect;
-    private RecyclerView recyclerViewSelectedList;
-    private RecyclerView.LayoutManager layoutManagerSelectedList;
-    private TaskAdapter taskAdapter;
     private TaskListAdapter taskListAdapter;
-
     private FirebaseAuth mAuth;
-    private FirebaseUser firebaseUser;
-    private User user;
+    private ArrayList<TaskList> userTasksList;
 
     private static final String TAG = "DashboardActivity";
 
@@ -35,11 +38,48 @@ public class DashboardActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
 
+        userTasksList = new ArrayList<>();
+        pseudo = findViewById(R.id.dashboard_userPseudo);
         logOut = findViewById(R.id.dashboard_logout);
 
+        //get infos from database (ex: user info)
         mAuth = FirebaseAuth.getInstance();
-        firebaseUser = mAuth.getCurrentUser();
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference mPseudo = database.getReference("user_" + mAuth.getUid()).child("pseudo");
 
+        //PSEUDO
+        mPseudo.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String valuePseudo = snapshot.getValue(String.class);
+                pseudo.setText(valuePseudo);
+                Log.d(TAG, "onDataChange: " + valuePseudo);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.w(TAG, "Failed to read value for the user Pseudo", error.toException());
+            }
+        });
+
+        // TASKS LIST for the recycler view
+        DatabaseReference mTasksList = database.getReference("user_" + mAuth.getUid()).child("tasks_list");
+        mTasksList.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                userTasksList.clear();
+                for (DataSnapshot snap : snapshot.getChildren()) {
+                    userTasksList.add(snap.getValue(TaskList.class));
+                }
+                sendSomeToThatRecyclerViewBiatch();
+                Log.d(TAG, "userTasksList final size : " + String.valueOf(userTasksList.size()));
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.w(TAG, "Failed to access tasks list", error.toException());
+            }
+        });
 
         logOut.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -50,62 +90,34 @@ public class DashboardActivity extends AppCompatActivity {
                 finish();
             }
         });
-        user = new User(firebaseUser.getDisplayName(), firebaseUser.getEmail());
+//
+//        sendSomeToThatRecyclerViewBiatch();
+    }
+
+    @Override
+    public void onTaskClick(int position) {
+        Log.d(TAG, "DashboardActivity has seen a click on item " + position);
+
+        Intent taskIntent = new Intent(this, SelectedListActivity.class);
+        taskIntent.putExtra("taskLists_number", String.valueOf(position));
+//        taskIntent.putExtra("selected_list", (Parcelable) userTasksList.get(position));
+        startActivity(taskIntent);
 
 
-        // liste de tâche
-        Task tache = new Task("Hellow World", "Jype");
-        Task tache2 = new Task("Faire des bisous", "Jype");
-        Task tache3 = new Task("Faire des surfs", "Jype");
-        Task tache4 = new Task("Faire des nems", "Jype");
-        Task tache5 = new Task("Faire à manger", "Jype");
-        List<Task>tasksList = new ArrayList<>();
-        tasksList.add(tache);
-        tasksList.add(tache2);
-        tasksList.add(tache3);
-        tasksList.add(tache4);
-        tasksList.add(tache5);
+    }
 
-        TaskList tacheList = new TaskList("Hellow World Liste");
-        tacheList.setTasksList(tasksList);
-        tacheList.setAuthor("Linus");
-
-        // liste de tâche
-        Task tache21 = new Task("surfer", "Jype");
-        Task tache22 = new Task("Faire pâtes", "Maman");
-        Task tache23 = new Task("Ranger le sable", "JC");
-        Task tache24 = new Task("Courir", "JC");
-        List<Task>tasksList2 = new ArrayList<>();
-        tasksList2.add(tache21);
-        tasksList2.add(tache22);
-        tasksList2.add(tache23);
-        tasksList2.add(tache24);
-
-        TaskList tacheList2 = new TaskList("Seconde Liste");
-        tacheList2.setTasksList(tasksList2);
-        tacheList2.setAuthor("Torvald");
-
-        List<TaskList> AllList = new ArrayList<>();
-        AllList.add(tacheList);
-        AllList.add(tacheList2);
-
-        // RECYCLER VIEW LIST TO SELECT
-        // init
-        recyclerViewListToSelect = findViewById(R.id.dashboard_recyclerView);
-        recyclerViewListToSelect.setHasFixedSize(true);
-        layoutManagerListToSelect = new LinearLayoutManager(DashboardActivity.this);
-        recyclerViewListToSelect.setLayoutManager(layoutManagerListToSelect);
-
-//        taskAdapter = new TaskAdapter(tasksList);
-        taskListAdapter = new TaskListAdapter(AllList);
-        recyclerViewListToSelect.setAdapter(taskListAdapter);
-
-        //RECYCLER VIEW SELECTED LIST
-        // init
-        recyclerViewSelectedList = findViewById(R.id.dashboard_recyclerView_SelectedToDoList);
-        layoutManagerSelectedList = new LinearLayoutManager(DashboardActivity.this);
-        recyclerViewSelectedList.setLayoutManager(layoutManagerSelectedList);
-        taskAdapter = new TaskAdapter(tacheList2.getTasksList());
-        recyclerViewSelectedList.setAdapter(taskAdapter);
+    private void sendSomeToThatRecyclerViewBiatch() {
+        if (userTasksList != null) {
+            // RECYCLER VIEW LIST TO SELECT
+            // init
+            recyclerViewListToSelect = findViewById(R.id.dashboard_recyclerView);
+            recyclerViewListToSelect.setHasFixedSize(true);
+            layoutManagerListToSelect = new LinearLayoutManager(DashboardActivity.this);
+            recyclerViewListToSelect.setLayoutManager(layoutManagerListToSelect);
+            taskListAdapter = new TaskListAdapter(userTasksList, this);
+            recyclerViewListToSelect.setAdapter(taskListAdapter);
+        } else {
+            Toast.makeText(this, "No list yet", Toast.LENGTH_SHORT).show();
+        }
     }
 }

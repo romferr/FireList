@@ -21,7 +21,6 @@
             android:id="@+id/dashboard_userPseudo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="PSEUDO"
             android:layout_margin="10dp"
             />
     </LinearLayout>
@@ -54,15 +53,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/dashboard_recyclerView_SelectedToDoList"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scrollbars="vertical"/>
-
-    </LinearLayout>
+        android:orientation="vertical"/>
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
@@ -71,7 +62,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:text="LOG OUT"
+            android:text="@string/dash_log_out"
             />
 
 

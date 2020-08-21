@@ -4,10 +4,19 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.List;
 
@@ -22,6 +31,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
         private TextView nom;
         private TextView author;
         private TextView description;
+        private CheckBox checkbox;
         OnTaskClickListener onTaskClickListener;
 
         public TaskViewHolder(@NonNull View itemView, OnTaskClickListener onTaskClickListener) {
@@ -54,11 +64,25 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
     }
 
     @Override
-    public void onBindViewHolder(@NonNull TaskViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final TaskViewHolder holder, int position) {
         Log.d(TAG, "TaskAdapter : onBindViewHolder called");
         Task task = tasks.get(position);
         holder.nom.setText(task.getNom());
-        holder.author.setText(task.getCreator());
+        //get author from a parent db object
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference mAuthor = database.getReference("user_" + task.getCreator());
+        mAuthor.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                holder.author.setText((String) snapshot.child("pseudo").getValue());
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+//        holder.author.setText(task.getCreator());
         holder.description.setText(task.getDescription());
     }
 

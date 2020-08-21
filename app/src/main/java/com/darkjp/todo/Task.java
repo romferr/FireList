@@ -7,7 +7,7 @@ public class Task {
     private String nom;
     private String creator;
     private String description;
-    private boolean done;
+    private Boolean done;
 
     public Task (){}
 
@@ -72,7 +72,7 @@ public class Task {
                 "nom='" + nom + '\'' +
                 ", creator='" + creator + '\'' +
                 ", description='" + description + '\'' +
-                ", isDone=" + done +
+                ", done=" + done +
                 '}';
     }
 

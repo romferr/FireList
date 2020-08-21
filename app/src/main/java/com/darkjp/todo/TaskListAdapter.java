@@ -9,6 +9,12 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
 import java.util.List;
 
 public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskListViewHolder> {
@@ -51,13 +57,23 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskLi
     }
 
     @Override
-    public void onBindViewHolder(@NonNull TaskListViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final TaskListViewHolder holder, int position) {
         Log.d(TAG, "TaskListAdapter : onBindViewHolder called");
         TaskList taskList = taskLists.get(position);
         holder.title.setText(taskList.getTitle());
-        if (!taskList.getCreator().equals("") || taskList != null) {
-            holder.author.setText(taskList.getCreator());
-        }
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference mRef = database.getReference("user_"+ taskList.getCreator());
+        mRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                holder.author.setText((String) snapshot.child("pseudo").getValue());
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
 
     }
 

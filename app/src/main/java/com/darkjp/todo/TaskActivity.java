@@ -52,7 +52,7 @@ public class TaskActivity extends AppCompatActivity {
             System.out.println();
 
             //get Creator name
-            DatabaseReference mUser = database.getReference("user/" + mAuth.getCurrentUser().getUid());
+            final DatabaseReference mUser = database.getReference("user/" + mAuth.getCurrentUser().getUid());
             DatabaseReference mTask = mUser.child("tasks_list").child(taskListIndex);
 
             mTask.addValueEventListener(new ValueEventListener() {
@@ -66,12 +66,12 @@ public class TaskActivity extends AppCompatActivity {
                             System.out.println("SNAP " + snapshot.toString());
 
                             if (snapshot.child("title").getValue() != null && !snapshot.child("title").getValue().equals(""))
-                                title.setText(snapshot.child("title").getValue().toString());
+                                title.setText(snapshot.child("title").getValue().toString() + " :");
                             if (snapshot.child("description").getValue() != null && !snapshot.child("description").getValue().equals(""))
                                 description.setText(snapshot.child("description").getValue().toString());
                             if (snapshot.child("done").getValue().toString().equals("true"))
                                 isDoneCheckBox.setChecked(true);
-                            if (snapshot.child("creator").getValue() != null && !snapshot.child("creator").getValue().equals("")) {
+                            if (snapshot.child("creator").getValue() != null && !snapshot.child("creator").getValue().toString().equals("") && !snapshot.child("creator").getValue().toString().equals(FirebaseAuth.getInstance().getUid())) {
                                 DatabaseReference mCreator = database.getReference("user/" + snapshot.child("creator").getValue().toString()).child("pseudo");
                                 mCreator.addValueEventListener(new ValueEventListener() {
                                     @Override

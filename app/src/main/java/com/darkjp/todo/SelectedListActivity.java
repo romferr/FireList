@@ -96,26 +96,24 @@ public class SelectedListActivity extends AppCompatActivity implements TaskAdapt
                                     tasks.add(snap.getValue(Task.class));
                                     sendSomeToThatRecyclerViewBiatch(tasks);
                                 }
-//                                DatabaseReference mParticipants = mTaskList.child("participant");
                                 if (snapshot.child("participant") != null) {
                                     for (DataSnapshot snapParticipant : snapshot.child("participant").getChildren()) {
+                                        System.out.println("TABOO " + snapParticipant.getKey());
                                         participants.setText("");
                                         if (tasks != null) {
-                                            for (DataSnapshot snapId : snapParticipant.getChildren()) {
-                                                if (!snapId.getValue().toString().equals(user.getUid())) {
-                                                    DatabaseReference mPseudo = database.getReference("user/" + snapId.getValue()).child("pseudo");
-                                                    mPseudo.addValueEventListener(new ValueEventListener() {
-                                                        @Override
-                                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                                            participants.setText(participants.getText().toString() + snapshot.getValue().toString() + ", ");
-                                                        }
+                                            if (!snapParticipant.getKey().equals(user.getUid())) {
+                                                DatabaseReference mPseudo = database.getReference("user/" + snapParticipant.getKey()).child("pseudo");
+                                                mPseudo.addValueEventListener(new ValueEventListener() {
+                                                    @Override
+                                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                        participants.setText(participants.getText().toString() + snapshot.getValue().toString() + ", ");
+                                                    }
 
-                                                        @Override
-                                                        public void onCancelled(@NonNull DatabaseError error) {
+                                                    @Override
+                                                    public void onCancelled(@NonNull DatabaseError error) {
 
-                                                        }
-                                                    });
-                                                }
+                                                    }
+                                                });
                                             }
                                         }
                                         participants.setText("Participant(s): ");

@@ -9,6 +9,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -27,7 +28,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
     public static class TaskViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private TextView nom, creator, description, by;
         private CheckBox checkbox;
-        OnTaskClickListener onTaskClickListener;
+        private OnTaskClickListener onTaskClickListener;
 
         public TaskViewHolder(@NonNull View itemView, OnTaskClickListener onTaskClickListener) {
             super(itemView);
@@ -66,7 +67,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
         holder.nom.setText(task.getTitle());
         //get author from a parent db object
 
-        if (task.getCreator() != null && !task.getCreator().equals("")) {
+        if (task.getCreator() != null && !task.getCreator().equals("") && !task.getCreator().equals(FirebaseAuth.getInstance().getUid())) {
             FirebaseDatabase database = FirebaseDatabase.getInstance();
             DatabaseReference mAuthor = database.getReference("user/" + task.getCreator());
             mAuthor.addValueEventListener(new ValueEventListener() {

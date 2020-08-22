@@ -4,12 +4,13 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class TaskList implements Parcelable {
     private String id;
     private String title;
     private String creator;
-    private ArrayList<User> participant;
+    private HashMap<String, Boolean> participant;
     private ArrayList<Task> task;
 
 
@@ -20,7 +21,7 @@ public class TaskList implements Parcelable {
         this.id = id;
         this.title = title;
         this.creator = "";
-        this.participant = new ArrayList<>();
+        this.participant = new HashMap<>();
         this.task = new ArrayList<>();
     }
 
@@ -66,11 +67,11 @@ public class TaskList implements Parcelable {
         this.creator = creator;
     }
 
-    public ArrayList<User> getParticipant() {
+    public HashMap<String, Boolean> getParticipant() {
         return participant;
     }
 
-    public void setParticipant(ArrayList<User> participant) {
+    public void setParticipant(HashMap<String, Boolean> participant) {
         this.participant = participant;
     }
 
@@ -89,7 +90,6 @@ public class TaskList implements Parcelable {
                 "title='" + title + '\'' +
                 ", author='" + creator + '\'' +
                 ", tasks=" + task +
-                ", participants=" + participant +
                 '}';
     }
 

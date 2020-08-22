@@ -60,7 +60,8 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskLi
     @Override
     public void onBindViewHolder(@NonNull final TaskListViewHolder holder, int position) {
         TaskList taskList = taskLists.get(position);
-        holder.title.setText(taskList.getTitle());
+        if (taskList != null)
+            holder.title.setText(taskList.getTitle());
         if (taskList.getCreator()!= null && !taskList.getCreator().equals("") && !taskList.getCreator().equals(FirebaseAuth.getInstance().getUid())) {
             FirebaseDatabase database = FirebaseDatabase.getInstance();
             DatabaseReference mRef = database.getReference("user/" + taskList.getCreator());

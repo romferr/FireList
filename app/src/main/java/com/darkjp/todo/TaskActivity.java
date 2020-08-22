@@ -52,50 +52,36 @@ public class TaskActivity extends AppCompatActivity {
             System.out.println();
 
             //get Creator name
-            final DatabaseReference mUser = database.getReference("user/" + mAuth.getCurrentUser().getUid());
-            DatabaseReference mTask = mUser.child("tasks_list").child(taskListIndex);
-
-            mTask.addValueEventListener(new ValueEventListener() {
+            DatabaseReference mSelectedTask = database.getReference("tasksList/" + taskListIndex).child("task/" + taskIndex);
+            mSelectedTask.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    selectedTaskId = snapshot.child("id").getValue(String.class);
-                    DatabaseReference mSelectedTask = database.getReference("tasksList/" + selectedTaskId).child("task/" + taskIndex);
-                    mSelectedTask.addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            System.out.println("SNAP " + snapshot.toString());
+                    System.out.println("SNAP " + snapshot.toString());
 
-                            if (snapshot.child("title").getValue() != null && !snapshot.child("title").getValue().equals(""))
-                                title.setText(snapshot.child("title").getValue().toString() + " :");
-                            if (snapshot.child("description").getValue() != null && !snapshot.child("description").getValue().equals(""))
-                                description.setText(snapshot.child("description").getValue().toString());
-                            if (snapshot.child("done").getValue().toString().equals("true"))
-                                isDoneCheckBox.setChecked(true);
-                            if (snapshot.child("creator").getValue() != null && !snapshot.child("creator").getValue().toString().equals("") && !snapshot.child("creator").getValue().toString().equals(FirebaseAuth.getInstance().getUid())) {
-                                DatabaseReference mCreator = database.getReference("user/" + snapshot.child("creator").getValue().toString()).child("pseudo");
-                                mCreator.addValueEventListener(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                        if (snapshot.getValue() != null && !snapshot.getValue().equals(""))
-                                            creator.setText(snapshot.getValue(String.class));
-                                    }
-
-                                    @Override
-                                    public void onCancelled(@NonNull DatabaseError error) {
-
-                                    }
-                                });
-                            } else {
-                                creator.setText("");
-                                by.setText("");
+                    if (snapshot.child("title").getValue() != null && !snapshot.child("title").getValue().equals(""))
+                        title.setText(snapshot.child("title").getValue().toString() + " :");
+                    if (snapshot.child("description").getValue() != null && !snapshot.child("description").getValue().equals(""))
+                        description.setText(snapshot.child("description").getValue().toString());
+                    if (snapshot.child("done").getValue().toString().equals("true"))
+                        isDoneCheckBox.setChecked(true);
+                    if (snapshot.child("creator").getValue() != null && !snapshot.child("creator").getValue().toString().equals("") && !snapshot.child("creator").getValue().toString().equals(FirebaseAuth.getInstance().getUid())) {
+                        DatabaseReference mCreator = database.getReference("user/" + snapshot.child("creator").getValue().toString()).child("pseudo");
+                        mCreator.addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                if (snapshot.getValue() != null && !snapshot.getValue().equals(""))
+                                    creator.setText(snapshot.getValue(String.class));
                             }
-                        }
 
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) {
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
 
-                        }
-                    });
+                            }
+                        });
+                    } else {
+                        creator.setText("");
+                        by.setText("");
+                    }
                 }
 
                 @Override
@@ -103,8 +89,6 @@ public class TaskActivity extends AppCompatActivity {
 
                 }
             });
-
-
         } else {
             Toast.makeText(this, "NO TASK ! BAST44444RDZZZZ !", Toast.LENGTH_SHORT).show();
         }

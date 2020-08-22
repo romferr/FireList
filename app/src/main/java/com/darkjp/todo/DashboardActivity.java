@@ -7,6 +7,7 @@ import android.renderscript.Sampler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,6 +27,7 @@ import java.util.ArrayList;
 
 public class DashboardActivity extends AppCompatActivity implements TaskListAdapter.OnTaskListClickListener {
     private TextView pseudo;
+    private ImageView newTask, contacts;
     private Button logOut;
     private RecyclerView recyclerViewListToSelect;
     private RecyclerView.LayoutManager layoutManagerListToSelect;
@@ -42,7 +44,9 @@ public class DashboardActivity extends AppCompatActivity implements TaskListAdap
 
         userTasksList = new ArrayList<>();
         pseudo = findViewById(R.id.dashboard_userPseudo);
+        newTask = findViewById(R.id.dashboard_add_new_task);
         logOut = findViewById(R.id.dashboard_logout);
+
 
         //get infos from database (ex: user info)
         mAuth = FirebaseAuth.getInstance();
@@ -63,30 +67,23 @@ public class DashboardActivity extends AppCompatActivity implements TaskListAdap
             }
         });
 
-        // TASKS LIST for the recycler view
-        DatabaseReference mTasksList = database.getReference("user/" + mAuth.getUid()).child("tasks_list");
+        DatabaseReference mTasksList = database.getReference("tasksList");
         mTasksList.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 userTasksList.clear();
-                for (DataSnapshot dsnap : snapshot.getChildren()) {
-                    DatabaseReference mList = database.getReference("tasksList").child(dsnap.child("id").getValue().toString());
-                    mList.addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            userTasksList.add(snapshot.getValue(TaskList.class));
-                            sendSomeToThatRecyclerViewBiatch();
+                for (DataSnapshot snapCreator : snapshot.getChildren()) {
+                    if (snapCreator.child("creator").getValue().toString().equals(FirebaseAuth.getInstance().getUid())) {
+                        userTasksList.add(snapCreator.getValue(TaskList.class));
+                    }
+                    for (DataSnapshot snapParticipant : snapCreator.child("participant").getChildren()) {
+                        if (snapParticipant.getKey().toString().equals(FirebaseAuth.getInstance().getUid())){
+                            userTasksList.add(snapCreator.getValue(TaskList.class));
                         }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) {
-
-                        }
-                    });
-
+                    }
                 }
-
-                }
+                sendSomeToThatRecyclerViewBiatch();
+            }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
@@ -94,6 +91,13 @@ public class DashboardActivity extends AppCompatActivity implements TaskListAdap
             }
         });
 
+        newTask.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent newTaskList = new Intent(DashboardActivity.this, TaskListActivity.class);
+                startActivity(newTaskList);
+            }
+        });
 
         logOut.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -109,7 +113,9 @@ public class DashboardActivity extends AppCompatActivity implements TaskListAdap
     @Override
     public void onTaskClick(int position) {
         Intent taskIntent = new Intent(this, SelectedListActivity.class);
-        taskIntent.putExtra("taskListIndex", String.valueOf(position));
+//        taskIntent.putExtra("taskListIndex", String.valueOf(position));
+        taskIntent.putExtra("taskListIndex", userTasksList.get(position).getId());
+        System.out.println("index :" + userTasksList.get(position).getId());;
         startActivity(taskIntent);
 
 

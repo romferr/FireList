@@ -77,56 +77,42 @@ public class SelectedListActivity extends AppCompatActivity implements TaskAdapt
                 }
             });
 
-            DatabaseReference mSelectedListId = mUser
-                    .child("tasks_list")
-                    .child(listId).child("id");
-            mSelectedListId.addValueEventListener(new ValueEventListener() {
+            final DatabaseReference mTaskList = database.getReference("tasksList/" + listId);
+            mTaskList.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    selectedList = snapshot.getValue(String.class);
+                    System.out.println("snapshot " + snapshot.getValue());
+                    if (tasks != null) {
+                        tasks.clear();
+                        title.setText(snapshot.child("title").getValue().toString());
 
-                    final DatabaseReference mTaskList = database.getReference("tasksList/" + snapshot.getValue(String.class));
-                    mTaskList.addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            if (tasks != null) {
-                                tasks.clear();
-                                title.setText(snapshot.child("title").getValue().toString());
-
-                                for (DataSnapshot snap : snapshot.child("task").getChildren()) {
-                                    tasks.add(snap.getValue(Task.class));
-                                    sendSomeToThatRecyclerViewBiatch(tasks);
-                                }
-                                if (snapshot.child("participant") != null) {
-                                    for (DataSnapshot snapParticipant : snapshot.child("participant").getChildren()) {
-                                        participants.setText("");
-                                        if (tasks != null) {
-                                            if (!snapParticipant.getKey().equals(user.getUid())) {
-                                                DatabaseReference mPseudo = database.getReference("user/" + snapParticipant.getKey()).child("pseudo");
-                                                mPseudo.addValueEventListener(new ValueEventListener() {
-                                                    @Override
-                                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                                        participants.setText(participants.getText().toString() + snapshot.getValue().toString() + ", ");
-                                                    }
-
-                                                    @Override
-                                                    public void onCancelled(@NonNull DatabaseError error) {
-
-                                                    }
-                                                });
+                        for (DataSnapshot snap : snapshot.child("task").getChildren()) {
+                            tasks.add(snap.getValue(Task.class));
+                            sendSomeToThatRecyclerViewBiatch(tasks);
+                        }
+                        if (snapshot.child("participant") != null) {
+                            for (DataSnapshot snapParticipant : snapshot.child("participant").getChildren()) {
+                                participants.setText("");
+                                if (tasks != null) {
+                                    if (!snapParticipant.getKey().equals(user.getUid())) {
+                                        DatabaseReference mPseudo = database.getReference("user/" + snapParticipant.getKey()).child("pseudo");
+                                        mPseudo.addValueEventListener(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                participants.setText(participants.getText().toString() + snapshot.getValue().toString() + ", ");
                                             }
-                                        }
-                                        participants.setText("Participant(s):\n");
+
+                                            @Override
+                                            public void onCancelled(@NonNull DatabaseError error) {
+
+                                            }
+                                        });
                                     }
                                 }
+                                participants.setText("Participant(s):\n");
                             }
                         }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) {
-
-                        }
-                    });
+                    }
                 }
 
                 @Override

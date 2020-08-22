@@ -7,7 +7,7 @@ import java.util.Objects;
 
 public class User {
     private String id, pseudo, email, imgProfile;
-    private ArrayList <TaskList> taskList;
+    private ArrayList <String> taskList;
 
     public User() {
     }
@@ -51,11 +51,11 @@ public class User {
         this.imgProfile = imgProfile;
     }
 
-    public ArrayList<TaskList> getTaskList() {
+    public ArrayList<String> getTaskList() {
         return taskList;
     }
 
-    public void setTaskList(ArrayList<TaskList> taskList) {
+    public void setTaskList(ArrayList<String> taskList) {
         this.taskList = taskList;
     }
 

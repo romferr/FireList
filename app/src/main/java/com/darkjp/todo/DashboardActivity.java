@@ -2,6 +2,8 @@ package com.darkjp.todo;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.ContactsContract;
+import android.renderscript.Sampler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -44,8 +46,8 @@ public class DashboardActivity extends AppCompatActivity implements TaskListAdap
 
         //get infos from database (ex: user info)
         mAuth = FirebaseAuth.getInstance();
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference mPseudo = database.getReference("user_" + mAuth.getUid()).child("pseudo");
+        final FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference mPseudo = database.getReference("user/" + mAuth.getUid()).child("pseudo");
 
         //PSEUDO
         mPseudo.addValueEventListener(new ValueEventListener() {
@@ -53,7 +55,6 @@ public class DashboardActivity extends AppCompatActivity implements TaskListAdap
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 String valuePseudo = snapshot.getValue(String.class);
                 pseudo.setText(valuePseudo);
-                Log.d(TAG, "onDataChange: " + valuePseudo);
             }
 
             @Override
@@ -63,23 +64,36 @@ public class DashboardActivity extends AppCompatActivity implements TaskListAdap
         });
 
         // TASKS LIST for the recycler view
-        DatabaseReference mTasksList = database.getReference("user_" + mAuth.getUid()).child("tasks_list");
+        DatabaseReference mTasksList = database.getReference("user/" + mAuth.getUid()).child("tasks_list");
         mTasksList.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 userTasksList.clear();
-                for (DataSnapshot snap : snapshot.getChildren()) {
-                    userTasksList.add(snap.getValue(TaskList.class));
+                for (DataSnapshot dsnap : snapshot.getChildren()) {
+                    DatabaseReference mList = database.getReference("tasksList").child(dsnap.child("id").getValue().toString());
+                    mList.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            userTasksList.add(snapshot.getValue(TaskList.class));
+                            sendSomeToThatRecyclerViewBiatch();
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+
+                        }
+                    });
+
                 }
-                sendSomeToThatRecyclerViewBiatch();
-                Log.d(TAG, "userTasksList final size : " + String.valueOf(userTasksList.size()));
-            }
+
+                }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Log.w(TAG, "Failed to access tasks list", error.toException());
+
             }
         });
+
 
         logOut.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -90,17 +104,12 @@ public class DashboardActivity extends AppCompatActivity implements TaskListAdap
                 finish();
             }
         });
-//
-//        sendSomeToThatRecyclerViewBiatch();
     }
 
     @Override
     public void onTaskClick(int position) {
-        Log.d(TAG, "DashboardActivity has seen a click on item " + position);
-
         Intent taskIntent = new Intent(this, SelectedListActivity.class);
-        taskIntent.putExtra("taskLists_number", String.valueOf(position));
-//        taskIntent.putExtra("selected_list", (Parcelable) userTasksList.get(position));
+        taskIntent.putExtra("taskListIndex", String.valueOf(position));
         startActivity(taskIntent);
 
 

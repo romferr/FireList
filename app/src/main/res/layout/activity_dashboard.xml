@@ -7,6 +7,7 @@
     tools:context=".DashboardActivity"
     android:background="@color/background"
     android:orientation="vertical"
+
     >
 
     <LinearLayout
@@ -34,7 +35,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:layout_margin="3dp">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/dashboard_recyclerView"
@@ -53,10 +55,12 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"/>
+        android:orientation="vertical"
+        android:layout_margin="3dp"/>
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:layout_margin="3dp"/>
         <Button
             android:id="@+id/dashboard_logout"
             android:layout_width="wrap_content"

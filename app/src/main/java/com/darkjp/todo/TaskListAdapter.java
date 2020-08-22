@@ -9,6 +9,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -24,14 +25,14 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskLi
     private final String TAG = "TaskListAdapter";
 
     public static class TaskListViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
-        private TextView title;
-        private TextView author;
+        private TextView title, creator, by;
         OnTaskListClickListener onTaskListClickListener;
 
         public TaskListViewHolder(@NonNull View itemView,  OnTaskListClickListener onTaskListClickListener) {
             super(itemView);
             title = itemView.findViewById(R.id.row_task_list_title);
-            author = itemView.findViewById(R.id.row_task_list_author);
+            by = itemView.findViewById(R.id.row_task_list_by);
+            creator = itemView.findViewById(R.id.row_task_list_author);
             this.onTaskListClickListener = onTaskListClickListener;
 
             itemView.setOnClickListener(this);
@@ -58,23 +59,26 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskLi
 
     @Override
     public void onBindViewHolder(@NonNull final TaskListViewHolder holder, int position) {
-        Log.d(TAG, "TaskListAdapter : onBindViewHolder called");
         TaskList taskList = taskLists.get(position);
         holder.title.setText(taskList.getTitle());
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference mRef = database.getReference("user_"+ taskList.getCreator());
-        mRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                holder.author.setText((String) snapshot.child("pseudo").getValue());
-            }
+        if (taskList.getCreator()!= null && !taskList.getCreator().equals("") && !taskList.getCreator().equals(FirebaseAuth.getInstance().getUid())) {
+            FirebaseDatabase database = FirebaseDatabase.getInstance();
+            DatabaseReference mRef = database.getReference("user/" + taskList.getCreator());
+            mRef.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    holder.creator.setText((String) snapshot.child("pseudo").getValue());
+                }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
 
-            }
-        });
-
+                }
+            });
+        } else {
+            holder.by.setText("");
+            holder.creator.setText("");
+        }
     }
 
     @Override

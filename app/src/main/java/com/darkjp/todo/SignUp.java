@@ -117,7 +117,7 @@ public class SignUp extends AppCompatActivity {
         User user = new User(firebaseUser.getUid(), userPseudo, firebaseUser.getEmail());
 
         database = FirebaseDatabase.getInstance();
-        dataRef = database.getReference("user_" + user.getId());
+        dataRef = database.getReference("user/" + user.getId());
 
         dataRef.setValue(user);
         Log.d(TAG, "createCustomUserInDatabase: new user Created : " + firebaseUser.getUid());

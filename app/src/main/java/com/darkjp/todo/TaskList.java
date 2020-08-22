@@ -9,8 +9,8 @@ public class TaskList implements Parcelable {
     private String id;
     private String title;
     private String creator;
-    private ArrayList<User> participants;
-    private ArrayList<Task> tasksList;
+    private ArrayList<User> participant;
+    private ArrayList<Task> task;
 
 
     public TaskList() {
@@ -20,8 +20,8 @@ public class TaskList implements Parcelable {
         this.id = id;
         this.title = title;
         this.creator = "";
-        this.participants = new ArrayList<>();
-        this.tasksList = new ArrayList<>();
+        this.participant = new ArrayList<>();
+        this.task = new ArrayList<>();
     }
 
     protected TaskList(Parcel in) {
@@ -66,20 +66,20 @@ public class TaskList implements Parcelable {
         this.creator = creator;
     }
 
-    public ArrayList<User> getParticipants() {
-        return participants;
+    public ArrayList<User> getParticipant() {
+        return participant;
     }
 
-    public void setParticipants(ArrayList<User> participants) {
-        this.participants = participants;
+    public void setParticipant(ArrayList<User> participant) {
+        this.participant = participant;
     }
 
-    public ArrayList<Task> getTasksList() {
-        return tasksList;
+    public ArrayList<Task> getTask() {
+        return task;
     }
 
-    public void setTasksList(ArrayList<Task> tasksList) {
-        this.tasksList = tasksList;
+    public void setTask(ArrayList<Task> task) {
+        this.task = task;
     }
 
     @Override
@@ -88,8 +88,8 @@ public class TaskList implements Parcelable {
                 "id='" + id +'\'' +
                 "title='" + title + '\'' +
                 ", author='" + creator + '\'' +
-                ", tasks=" + tasksList +
-                ", participants=" + participants +
+                ", tasks=" + task +
+                ", participants=" + participant +
                 '}';
     }
 

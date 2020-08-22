@@ -2,10 +2,8 @@ package com.darkjp.todo;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,8 +33,12 @@ public class SelectedListActivity extends AppCompatActivity implements TaskAdapt
     private FirebaseAuth mAuth;
     private FirebaseUser user;
     private String listId;
+    private String selectedList = "";
 
     private static final String TAG = "SelectedListActivity";
+
+    public SelectedListActivity() {
+    }
 
 
     @Override
@@ -57,11 +59,11 @@ public class SelectedListActivity extends AppCompatActivity implements TaskAdapt
 
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
 
-        if (getIntent().hasExtra("taskLists_number")) {
-            listId = getIntent().getStringExtra("taskLists_number");
+        if (getIntent().hasExtra("taskListIndex")) {
+            listId = getIntent().getStringExtra("taskListIndex");
 
 
-            DatabaseReference mUser = database.getReference("user_" + user.getUid());
+            DatabaseReference mUser = database.getReference("user/" + user.getUid());
             mUser.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -74,56 +76,59 @@ public class SelectedListActivity extends AppCompatActivity implements TaskAdapt
                 }
             });
 
-            DatabaseReference mtasksList = mUser
+            DatabaseReference mSelectedListId = mUser
                     .child("tasks_list")
-                    .child(listId);
-
-            mtasksList.addValueEventListener(new ValueEventListener() {
+                    .child(listId).child("id");
+            mSelectedListId.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    if (tasks != null) {
-                        tasks.clear();
+                    selectedList = snapshot.getValue(String.class);
 
-                        title.setText(snapshot.child("title").getValue().toString());
+                    final DatabaseReference mTaskList = database.getReference("tasksList/" + snapshot.getValue(String.class));
+                    mTaskList.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            if (tasks != null) {
+                                tasks.clear();
+                                title.setText(snapshot.child("title").getValue().toString());
 
-                        for (DataSnapshot snap : snapshot.child("tasks").getChildren()) {
-                            tasks.add(snap.getValue(Task.class));
-//                            Log.d(TAG, "tasks size is : " + tasks.size());
-                            sendSomeToThatRecyclerViewBiatch(tasks);
-                        }
-                    }
-                }
+                                for (DataSnapshot snap : snapshot.child("task").getChildren()) {
+                                    tasks.add(snap.getValue(Task.class));
+                                    sendSomeToThatRecyclerViewBiatch(tasks);
+                                }
+//                                DatabaseReference mParticipants = mTaskList.child("participant");
+                                if (snapshot.child("participant") != null) {
+                                    for (DataSnapshot snapParticipant : snapshot.child("participant").getChildren()) {
+                                        participants.setText("");
+                                        if (tasks != null) {
+                                            for (DataSnapshot snapId : snapParticipant.getChildren()) {
+                                                if (!snapId.getValue().toString().equals(user.getUid())) {
+                                                    DatabaseReference mPseudo = database.getReference("user/" + snapId.getValue()).child("pseudo");
+                                                    mPseudo.addValueEventListener(new ValueEventListener() {
+                                                        @Override
+                                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                            participants.setText(participants.getText().toString() + snapshot.getValue().toString() + ", ");
+                                                        }
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
+                                                        @Override
+                                                        public void onCancelled(@NonNull DatabaseError error) {
 
-                }
-            });
-
-            DatabaseReference mParticipants = mtasksList.child("participants");
-            mParticipants.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    participants.setText("");
-                    if (tasks != null) {
-                        for (DataSnapshot snapId : snapshot.getChildren()) {
-                            if (!snapId.child("id").getValue().toString().equals(user.getUid())) {
-                                DatabaseReference mPseudo = database.getReference("user_" + snapId.child("id").getValue()).child("pseudo");
-                                mPseudo.addValueEventListener(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                        participants.setText(participants.getText().toString() + snapshot.getValue().toString() + ", ");
+                                                        }
+                                                    });
+                                                }
+                                            }
+                                        }
+                                        participants.setText("Participant(s): ");
                                     }
-
-                                    @Override
-                                    public void onCancelled(@NonNull DatabaseError error) {
-
-                                    }
-                                });
+                                }
                             }
                         }
-                    }
-                    participants.setText("Participant(s): ");
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+
+                        }
+                    });
                 }
 
                 @Override
@@ -131,7 +136,6 @@ public class SelectedListActivity extends AppCompatActivity implements TaskAdapt
 
                 }
             });
-
 
         } else {
             Toast.makeText(this, "no tasks", Toast.LENGTH_SHORT).show();
@@ -163,7 +167,7 @@ public class SelectedListActivity extends AppCompatActivity implements TaskAdapt
 
     @Override
     public void onTaskClick(int position) {
-//        Toast.makeText(this, "CLICK CLICK open a new Intent. I'm sad, dave. What are you doing, dave ? Daaaave ?", Toast.LENGTH_SHORT).show();
+//        Toast.makeText(this, "CLICK CLICK "+ listId, Toast.LENGTH_SHORT).show();
         Intent taskToBeDone = new Intent(this, TaskActivity.class);
         taskToBeDone.putExtra("task", String.valueOf(position));
         taskToBeDone.putExtra("taskListIndex", listId);

@@ -4,26 +4,26 @@ import java.util.Objects;
 
 public class Task {
 
-    private String nom;
+    private String title;
     private String creator;
     private String description;
-    private Boolean done;
+    private boolean done;
 
     public Task (){}
 
-    public Task(String nom, String creator) {
-        this.nom = nom;
-        this.creator = creator;
+    public Task(String title) {
+        this.title = title;
+        this.creator = "";
         this.description = "";
         this.done = false;
     }
 
-    public String getNom() {
-        return nom;
+    public String getTitle() {
+        return title;
     }
 
-    public void setNom(String nom) {
-        this.nom = nom;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public String getCreator() {
@@ -56,20 +56,20 @@ public class Task {
         if (o == null || getClass() != o.getClass()) return false;
         Task task = (Task) o;
         return done == task.done &&
-                Objects.equals(nom, task.nom) &&
+                Objects.equals(title, task.title) &&
                 Objects.equals(creator, task.creator) &&
                 Objects.equals(description, task.description);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(nom, creator, description, done);
+        return Objects.hash(title, creator, description, done);
     }
 
     @Override
     public String toString() {
         return "Task{" +
-                "nom='" + nom + '\'' +
+                "nom='" + title + '\'' +
                 ", creator='" + creator + '\'' +
                 ", description='" + description + '\'' +
                 ", done=" + done +

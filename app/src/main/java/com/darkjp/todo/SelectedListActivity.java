@@ -2,6 +2,7 @@ package com.darkjp.todo;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Html;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -98,7 +99,6 @@ public class SelectedListActivity extends AppCompatActivity implements TaskAdapt
                                 }
                                 if (snapshot.child("participant") != null) {
                                     for (DataSnapshot snapParticipant : snapshot.child("participant").getChildren()) {
-                                        System.out.println("TABOO " + snapParticipant.getKey());
                                         participants.setText("");
                                         if (tasks != null) {
                                             if (!snapParticipant.getKey().equals(user.getUid())) {
@@ -116,7 +116,7 @@ public class SelectedListActivity extends AppCompatActivity implements TaskAdapt
                                                 });
                                             }
                                         }
-                                        participants.setText("Participant(s): ");
+                                        participants.setText("Participant(s):\n");
                                     }
                                 }
                             }

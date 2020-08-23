@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/background"
+    tools:context=".FooterFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <View
+            android:id="@+id/divider3"
+            android:layout_width="match_parent"
+            android:layout_height="10dp"
+            android:background="?android:attr/listDivider" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/fragment_footer_list"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@color/background"
+                android:src="@drawable/ic_baseline_assignment_24" />
+
+            <ImageButton
+                android:id="@+id/fragment_footer_contacts"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@color/background"
+                android:src="@drawable/ic_baseline_people_alt_24" />
+
+            <ImageButton
+                android:id="@+id/fragment_footer_add_list"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@color/background"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_baseline_control_point_24" />
+
+            <ImageButton
+                android:id="@+id/fragment_footer_user_profile"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@color/background"
+                android:src="@drawable/ic_baseline_account_box_24" />
+
+            <ImageButton
+                android:id="@+id/fragment_footer_exit_app"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@color/background"
+                android:src="@drawable/ic_baseline_block_24" />
+
+        </LinearLayout>
+    </LinearLayout>
+
+</FrameLayout>

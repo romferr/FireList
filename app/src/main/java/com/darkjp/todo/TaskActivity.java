@@ -101,13 +101,15 @@ public class TaskActivity extends AppCompatActivity {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         Task updateTask = new Task();
-                        if (snapshot.child("creator").getValue().toString() != null)
+                        if (snapshot.child("creator").getValue() != null)
+                            if (snapshot.child("creator").getValue().toString().equals(""))
+                                updateTask.setCreator("no creator found");
                             updateTask.setCreator(snapshot.child("creator").getValue().toString());
-                        if (snapshot.child("title").getValue().toString() != null)
+                        if (snapshot.child("title").getValue() != null)
                             updateTask.setTitle(snapshot.child("title").getValue().toString());
-                        if (snapshot.child("description").getValue().toString() != null)
+                        if (snapshot.child("description").getValue() != null)
                             updateTask.setDescription(snapshot.child("description").getValue().toString());
-                        if (snapshot.child("done").getValue().toString() != null)
+                        if (snapshot.child("done").getValue() != null)
                             updateTask.setDone(isDoneCheckBox.isChecked());
                         mDone.setValue(updateTask);
                     }

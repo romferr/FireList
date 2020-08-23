@@ -2,7 +2,6 @@ package com.darkjp.todo;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.Html;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -10,6 +9,8 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -25,7 +26,8 @@ import java.util.ArrayList;
 
 public class SelectedListActivity extends AppCompatActivity implements TaskAdapter.OnTaskClickListener {
 
-    private TextView title, pseudo, participants;
+    private TextView title;
+    private Fragment pseudo, participants;
     private Button back;
     private RecyclerView tasksRecyclerView;
     private RecyclerView.LayoutManager layoutManager;
@@ -34,7 +36,8 @@ public class SelectedListActivity extends AppCompatActivity implements TaskAdapt
     private FirebaseAuth mAuth;
     private FirebaseUser user;
     private String listId;
-    private String selectedList = "";
+
+    FragmentTransaction fragmentTransaction, fragmentTransactionFooter;
 
     private static final String TAG = "SelectedListActivity";
 
@@ -47,12 +50,24 @@ public class SelectedListActivity extends AppCompatActivity implements TaskAdapt
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_selected_list);
 
+        //fragment Header
+        fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        final HeaderFragment headerFragment = new HeaderFragment();
+        fragmentTransaction.replace(R.id.fragment_header, headerFragment);
+        fragmentTransaction.commit();
+        //fragment Footer
+        fragmentTransactionFooter = getSupportFragmentManager().beginTransaction();
+        FooterFragment footerFragment = new FooterFragment();
+        fragmentTransactionFooter.replace(R.id.fragment_footer, footerFragment);
+        fragmentTransactionFooter.commit();
+
         listId = "";
 
         title = findViewById(R.id.selectedList_txt_title);
-        pseudo = findViewById(R.id.selected_list_pseudo);
-        participants = findViewById(R.id.selected_list_participants);
-        back = findViewById(R.id.selectedList_btn_back);
+        pseudo = getSupportFragmentManager().findFragmentById(R.id.fragment_header);
+        participants = getSupportFragmentManager().findFragmentById(R.id.fragment_header);
+
+//        back = findViewById(R.id.selectedList_btn_back);
 
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
@@ -63,12 +78,11 @@ public class SelectedListActivity extends AppCompatActivity implements TaskAdapt
         if (getIntent().hasExtra("taskListIndex")) {
             listId = getIntent().getStringExtra("taskListIndex");
 
-
             DatabaseReference mUser = database.getReference("user/" + user.getUid());
             mUser.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    pseudo.setText(snapshot.child("pseudo").getValue(String.class));
+                    headerFragment.changePseudo(snapshot.child("pseudo").getValue(String.class));
                 }
 
                 @Override
@@ -81,7 +95,7 @@ public class SelectedListActivity extends AppCompatActivity implements TaskAdapt
             mTaskList.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    System.out.println("snapshot " + snapshot.getValue());
+
                     if (tasks != null) {
                         tasks.clear();
                         title.setText(snapshot.child("title").getValue().toString());
@@ -92,14 +106,16 @@ public class SelectedListActivity extends AppCompatActivity implements TaskAdapt
                         }
                         if (snapshot.child("participant") != null) {
                             for (DataSnapshot snapParticipant : snapshot.child("participant").getChildren()) {
-                                participants.setText("");
+                                headerFragment.changePseudo("");
                                 if (tasks != null) {
                                     if (!snapParticipant.getKey().equals(user.getUid())) {
                                         DatabaseReference mPseudo = database.getReference("user/" + snapParticipant.getKey()).child("pseudo");
                                         mPseudo.addValueEventListener(new ValueEventListener() {
                                             @Override
                                             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                                participants.setText(participants.getText().toString() + snapshot.getValue().toString() + ", ");
+                                                String participants = headerFragment.getParticipants();
+                                                headerFragment.addParticipant(participants + snapshot.getValue().toString() + ", ");
+//                                                participants.setText(participants.getText().toString() + snapshot.getValue().toString() + ", ");
                                             }
 
                                             @Override
@@ -109,7 +125,7 @@ public class SelectedListActivity extends AppCompatActivity implements TaskAdapt
                                         });
                                     }
                                 }
-                                participants.setText("Participant(s):\n");
+                                headerFragment.addParticipant("Participant(s):\n");
                             }
                         }
                     }
@@ -124,14 +140,6 @@ public class SelectedListActivity extends AppCompatActivity implements TaskAdapt
         } else {
             Toast.makeText(this, "no tasks", Toast.LENGTH_SHORT).show();
         }
-
-        back.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent returnToDash = new Intent(SelectedListActivity.this, DashboardActivity.class);
-                startActivity(returnToDash);
-            }
-        });
     }
 
     private void sendSomeToThatRecyclerViewBiatch(ArrayList<Task> tasks) {

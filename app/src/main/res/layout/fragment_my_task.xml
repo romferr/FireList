@@ -107,31 +107,46 @@
             </ScrollView>
         </LinearLayout>
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:orientation="horizontal">
-
-            <ImageButton
-                android:id="@+id/task_back_button"
-                android:layout_width="wrap_content"
+            android:layout_alignParentBottom="true">
+            <LinearLayout
+                android:id="@+id/fragment_new_add_task_menu"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/background"
-                android:rotation="180"
-                android:src="@drawable/ic_baseline_double_arrow_24">
+                android:gravity="center_horizontal"
+                android:orientation="horizontal">
 
-            </ImageButton>
+                <ImageButton
+                    android:id="@+id/fragment_new_task_back_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@color/background"
+                    android:rotation="180"
+                    android:layout_weight="0.1"
+                    android:src="@drawable/ic_baseline_double_arrow_24">
 
-            <ImageButton
-                android:id="@+id/task_new-task"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@color/background"
-                android:src="@drawable/ic_baseline_control_point_duplicate_24">
+                </ImageButton>
 
-            </ImageButton>
-        </LinearLayout>
+                <ImageButton
+                    android:id="@+id/fragment_new_add_task_save_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.1"
+                    android:src="@drawable/ic_baseline_save_24"
+                    android:visibility="gone" />
+
+                <ImageButton
+                    android:id="@+id/fragment_new_add_task_field"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.1"
+                    android:background="@color/background"
+                    android:src="@drawable/ic_baseline_library_books_24" />
+
+            </LinearLayout>
+        </RelativeLayout>
 
     </LinearLayout>
 </FrameLayout>

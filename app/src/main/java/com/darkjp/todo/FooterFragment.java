@@ -1,24 +1,22 @@
 package com.darkjp.todo;
 
-import android.app.Activity;
-import android.content.ContentProviderClient;
 import android.content.Intent;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 public class FooterFragment extends Fragment {
     ImageButton myLists, myContacts, newList, myProfile, quitApp;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -39,14 +37,27 @@ public class FooterFragment extends Fragment {
         myLists.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Toast.makeText(view.getContext(), "my lists", Toast.LENGTH_SHORT).show();
                 MyListsFragment myLists = new MyListsFragment();
-
                 FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
                 fragmentTransaction.replace(R.id.listFragment, myLists);
                 fragmentTransaction.addToBackStack(null);
                 fragmentTransaction.commit();
             }
         });
+
+        newList.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(view.getContext(), "add tasks", Toast.LENGTH_SHORT).show();
+                NewTaskListAndTasksFragment newTaskListAndTasksFragment = new NewTaskListAndTasksFragment();
+                FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
+                fragmentTransaction.replace(R.id.listFragment, newTaskListAndTasksFragment);
+                fragmentTransaction.addToBackStack(null);
+                fragmentTransaction.commit();
+                }
+        });
+
 
         quitApp.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -56,9 +67,9 @@ public class FooterFragment extends Fragment {
                 loginActivity.putExtra("email", user.getEmail());
                 startActivity(loginActivity);
                 getActivity().finish();
-
             }
         });
+
         return view;
     }
 }

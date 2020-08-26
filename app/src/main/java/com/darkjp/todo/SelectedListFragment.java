@@ -69,31 +69,6 @@ public class SelectedListFragment extends Fragment implements TaskAdapter.OnTask
                         tasks.add(snap.getValue(Task.class));
                         sendSomeToThatRecyclerViewBiatch(tasks);
                     }
-
-//                    if (snapshot.child("participant") != null) {
-//                        for (DataSnapshot snapParticipant : snapshot.child("participant").getChildren()) {
-////                            headerFragment.changePseudo("");
-//                            if (tasks != null) {
-//                                if (!snapParticipant.getKey().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
-//                                    DatabaseReference mPseudo = database.getReference("user/" + snapParticipant.getKey()).child("pseudo");
-//                                    mPseudo.addValueEventListener(new ValueEventListener() {
-//                                        @Override
-//                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                                            String participants = headerFragment.getParticipants();
-//                                            headerFragment.addParticipant(participants + snapshot.getValue().toString() + ", ");
-////                                                participants.setText(participants.getText().toString() + snapshot.getValue().toString() + ", ");
-//                                        }
-//
-//                                        @Override
-//                                        public void onCancelled(@NonNull DatabaseError error) {
-//
-//                                        }
-//                                    });
-//                                }
-//                            }
-//                        }
-//                        headerFragment.addParticipant("Participant(s):\n");
-//                    }
                 }
             }
 

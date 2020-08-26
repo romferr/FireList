@@ -1,6 +1,8 @@
 package com.darkjp.todo;
 
 import android.os.Bundle;
+import android.os.Parcelable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,20 +24,30 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 
 public class MyListsFragment extends Fragment implements TaskListAdapter.OnTaskListClickListener {
+    private static final String TAG = "MyListsFragment";
+    private static Bundle mBundleRecyclerViewState;
+    private final String KEY_RECYCLER_STATE = "recycler_state";
+
     FirebaseDatabase database = FirebaseDatabase.getInstance();
-    ArrayList<TaskList> userTasksList = new ArrayList<>();
-    private View view;
+    ArrayList<TaskList> userTasksList;
+
     private RecyclerView recyclerViewListToSelect;
     private RecyclerView.LayoutManager layoutManagerListToSelect;
     private TaskListAdapter taskListAdapter;
-
-    private FragmentTransaction ft;
+    private View view;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+        if (container != null) {
+            container.removeAllViews();
+        }
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_my_lists, container, false);
+//        recyclerViewListToSelect = view.findViewById(R.id.fragment_dashboard_recyclerView);
+
+        userTasksList = new ArrayList<>();
         DatabaseReference mTasksList = database.getReference("tasksList");
         mTasksList.addValueEventListener(new ValueEventListener() {
             @Override
@@ -46,7 +58,7 @@ public class MyListsFragment extends Fragment implements TaskListAdapter.OnTaskL
                         userTasksList.add(snapCreator.getValue(TaskList.class));
                     }
                     for (DataSnapshot snapParticipant : snapCreator.child("participant").getChildren()) {
-                        if (snapParticipant.getKey().toString().equals(FirebaseAuth.getInstance().getUid())) {
+                        if (snapParticipant.getKey().equals(FirebaseAuth.getInstance().getUid())) {
                             userTasksList.add(snapCreator.getValue(TaskList.class));
                         }
                     }
@@ -72,7 +84,7 @@ public class MyListsFragment extends Fragment implements TaskListAdapter.OnTaskL
         selectedListFragment.setArguments(listId);
 
         FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.fragment_myLists, selectedListFragment);
+        fragmentTransaction.replace(R.id.listFragment, selectedListFragment);
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
 
@@ -83,7 +95,7 @@ public class MyListsFragment extends Fragment implements TaskListAdapter.OnTaskL
         if (userTasksList != null) {
             // RECYCLER VIEW LIST TO SELECT
             // init
-            recyclerViewListToSelect = this.getView().findViewById(R.id.fragment_dashboard_recyclerView);
+            recyclerViewListToSelect = view.findViewById(R.id.fragment_dashboard_recyclerView);
             recyclerViewListToSelect.setHasFixedSize(true);
             layoutManagerListToSelect = new LinearLayoutManager(view.getContext());
             recyclerViewListToSelect.setLayoutManager(layoutManagerListToSelect);
@@ -92,5 +104,35 @@ public class MyListsFragment extends Fragment implements TaskListAdapter.OnTaskL
         } else {
             Toast.makeText(view.getContext(), "No list yet", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    @Override
+    public void onPause() {
+        Log.d(TAG, "et zou onPause()");
+        super.onPause();
+
+        // save RecyclerView state
+        mBundleRecyclerViewState = new Bundle();
+        if (recyclerViewListToSelect != null ) {
+            Parcelable listState = recyclerViewListToSelect.getLayoutManager().onSaveInstanceState();
+            mBundleRecyclerViewState.putParcelable(KEY_RECYCLER_STATE, listState);
+        }
+    }
+
+    @Override
+    public void onResume() {
+        Log.d(TAG, "et zou onResume()");
+        super.onResume();
+
+        // restore RecyclerView state
+        if (mBundleRecyclerViewState != null && recyclerViewListToSelect != null) {
+            Parcelable listState = mBundleRecyclerViewState.getParcelable(KEY_RECYCLER_STATE);
+            recyclerViewListToSelect.getLayoutManager().onRestoreInstanceState(listState);
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
     }
 }

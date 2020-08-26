@@ -37,6 +37,13 @@ public class DashboardActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
 
+        /**
+         * init fragments
+         * this is the main page for the app. Header and Footer menu won't be loading more than once
+         * except to refresh informations.
+         * the MyList fragment is the dashboard/landing page/fragment and is the fragment that will
+         * be replaced to display lists, etc.
+         */
         fragmentTransactionHeader = getSupportFragmentManager().beginTransaction();
         final HeaderFragment headerFragment = new HeaderFragment();
         fragmentTransactionHeader.replace(R.id.fragment_header, headerFragment);
@@ -44,13 +51,14 @@ public class DashboardActivity extends AppCompatActivity {
 
         fragmentTransactioMyLists = getSupportFragmentManager().beginTransaction();
         MyListsFragment myListsFragment = new MyListsFragment();
-        fragmentTransactioMyLists.replace(R.id.fragment_myLists, myListsFragment);
+        fragmentTransactioMyLists.replace(R.id.listFragment, myListsFragment);
         fragmentTransactioMyLists.commit();
 
         fragmentTransactionFooter = getSupportFragmentManager().beginTransaction();
         FooterFragment footerFragment = new FooterFragment();
         fragmentTransactionFooter.replace(R.id.fragment_footer, footerFragment);
         fragmentTransactionFooter.commit();
+
 
         //get infos from database (ex: user info)
         // 1) PSEUDO
@@ -67,5 +75,9 @@ public class DashboardActivity extends AppCompatActivity {
                 Log.w(TAG, "Failed to read value for the user Pseudo", error.toException());
             }
         });
+
+
     }
+
+
 }

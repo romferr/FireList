@@ -38,7 +38,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:background="@color/background"
-                android:src="@drawable/ic_baseline_people_alt_24" />
+                android:src="@drawable/ic_baseline_people_24" />
 
             <ImageButton
                 android:id="@+id/fragment_footer_add_list"
@@ -63,7 +63,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:background="@color/background"
-                android:src="@drawable/ic_baseline_block_24" />
+                android:src="@drawable/ic_baseline_exit_to_app_24" />
 
         </LinearLayout>
     </LinearLayout>

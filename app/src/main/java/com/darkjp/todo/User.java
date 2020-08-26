@@ -1,7 +1,5 @@
 package com.darkjp.todo;
 
-import com.google.firebase.auth.FirebaseUser;
-
 import java.util.ArrayList;
 import java.util.Objects;
 

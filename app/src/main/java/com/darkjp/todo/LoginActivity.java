@@ -40,6 +40,13 @@ public class LoginActivity extends AppCompatActivity {
         login = findViewById(R.id.login_btn_login);
         register = findViewById(R.id.login_btn_register);
 
+        //if user just logOut, email's already filled
+        String userEmail = "";
+        if (getIntent().hasExtra("email")) {
+            userEmail = getIntent().getStringExtra("email");
+            email.setText(userEmail);
+        }
+
         // init Authentication
         mAuth = FirebaseAuth.getInstance();
 

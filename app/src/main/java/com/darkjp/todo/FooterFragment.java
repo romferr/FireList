@@ -1,5 +1,7 @@
 package com.darkjp.todo;
 
+import android.app.Activity;
+import android.content.ContentProviderClient;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -12,6 +14,9 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
 public class FooterFragment extends Fragment {
     ImageButton myLists, myContacts, newList, myProfile, quitApp;
     @Override
@@ -19,6 +24,8 @@ public class FooterFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
 
+        final FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        final FirebaseUser user = mAuth.getCurrentUser();
 
 
         View view = inflater.inflate(R.layout.fragment_footer, container, false);
@@ -35,12 +42,23 @@ public class FooterFragment extends Fragment {
                 MyListsFragment myLists = new MyListsFragment();
 
                 FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
-                fragmentTransaction.replace(R.id.fragment_myLists, myLists);
+                fragmentTransaction.replace(R.id.listFragment, myLists);
                 fragmentTransaction.addToBackStack(null);
                 fragmentTransaction.commit();
             }
         });
 
+        quitApp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mAuth.signOut();
+                Intent loginActivity = new Intent(view.getContext(), LoginActivity.class);
+                loginActivity.putExtra("email", user.getEmail());
+                startActivity(loginActivity);
+                getActivity().finish();
+
+            }
+        });
         return view;
     }
 }

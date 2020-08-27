@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,6 +30,7 @@ public class SelectedListFragment extends Fragment implements TaskAdapter.OnTask
 
     private ArrayList<Task> tasks = new ArrayList<>();
     private Bundle bundle;
+    private ProgressBar progressBar;
     private RecyclerView tasksRecyclerView;
     private RecyclerView.LayoutManager layoutManager;
     private String listId;
@@ -54,21 +56,35 @@ public class SelectedListFragment extends Fragment implements TaskAdapter.OnTask
         bundle = getArguments();
         listId = bundle.getString("taskListIndex");
 
-
         title = view.findViewById(R.id.fragment_selectedList_txt_title);
+        progressBar = view.findViewById(R.id.progressBar);
+        progressBar.setVisibility(View.GONE);
 
         DatabaseReference mTaskList = database.getReference("tasksList/" + listId);
         mTaskList.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                int counter = 0;
+                int done = 0;
                 if (tasks != null) {
                     tasks.clear();
                     title.setText(snapshot.child("title").getValue().toString());
 
                     for (DataSnapshot snap : snapshot.child("task").getChildren()) {
                         tasks.add(snap.getValue(Task.class));
-                        sendSomeToThatRecyclerViewBiatch(tasks);
+                        counter++;
+                        if (snap.child("done").getValue().toString().equals("true"))
+                            done++;
+
+                        sendSomeToThatRecyclerViewBiatch(listId, tasks);
                     }
+                }
+                if (done != 0 || counter !=0) {
+                    progressBar.setVisibility(View.VISIBLE);
+                    progressBar.setProgress((100 * done) / counter, true);
+                } else {
+                    progressBar.setProgress(0, true);
+                    progressBar.setVisibility(View.GONE);
                 }
             }
 
@@ -78,9 +94,11 @@ public class SelectedListFragment extends Fragment implements TaskAdapter.OnTask
             }
         });
         return view;
+
+
     }
 
-    private void sendSomeToThatRecyclerViewBiatch(ArrayList<Task> tasks) {
+    private void sendSomeToThatRecyclerViewBiatch(String listId, ArrayList<Task> tasks) {
         if (tasks != null) {
             // RECYCLER VIEW LIST TO SELECT
             // init
@@ -88,7 +106,7 @@ public class SelectedListFragment extends Fragment implements TaskAdapter.OnTask
             tasksRecyclerView.setHasFixedSize(true);
             layoutManager = new LinearLayoutManager(view.getContext());
             tasksRecyclerView.setLayoutManager(layoutManager);
-            taskAdapter = new TaskAdapter(tasks, this);
+            taskAdapter = new TaskAdapter(listId, tasks, this);
             tasksRecyclerView.setAdapter(taskAdapter);
         } else {
             Toast.makeText(view.getContext(), "No list yet", Toast.LENGTH_SHORT).show();
@@ -113,18 +131,18 @@ public class SelectedListFragment extends Fragment implements TaskAdapter.OnTask
 
     @Override
     public void onPause() {
-        Log.d(TAG, "et zou onPause()");
         super.onPause();
 
         // save RecyclerView state
         mBundleRecyclerViewState = new Bundle();
-        Parcelable listState = tasksRecyclerView.getLayoutManager().onSaveInstanceState();
-        mBundleRecyclerViewState.putParcelable(KEY_RECYCLER_STATE, listState);
+        if (tasksRecyclerView != null ) {
+            Parcelable listState = tasksRecyclerView.getLayoutManager().onSaveInstanceState();
+            mBundleRecyclerViewState.putParcelable(KEY_RECYCLER_STATE, listState);
+        }
     }
 
     @Override
     public void onResume() {
-        Log.d(TAG, "et zou onResume()");
         super.onResume();
 
         // restore RecyclerView state

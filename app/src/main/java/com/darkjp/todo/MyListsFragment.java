@@ -9,12 +9,14 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -48,19 +50,91 @@ public class MyListsFragment extends Fragment implements TaskListAdapter.OnTaskL
 //        recyclerViewListToSelect = view.findViewById(R.id.fragment_dashboard_recyclerView);
 
         userTasksList = new ArrayList<>();
+        userTasksList.clear();
+
         DatabaseReference mTasksList = database.getReference("tasksList");
-        mTasksList.addValueEventListener(new ValueEventListener() {
+//        mTasksList.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot snapshot) {
+//                userTasksList.clear();
+//                for (DataSnapshot snapCreator : snapshot.getChildren()) {
+//                    if (snapCreator.child("creator").getValue().toString().equals(FirebaseAuth.getInstance().getUid())) {
+//                        userTasksList.add(snapCreator.getValue(TaskList.class));
+//                    }
+//                    for (DataSnapshot snapParticipant : snapCreator.child("participant").getChildren()) {
+//                        if (snapParticipant.getKey().equals(FirebaseAuth.getInstance().getUid())) {
+//                            userTasksList.add(snapCreator.getValue(TaskList.class));
+//                        }
+//                    }
+//                }
+//                sendSomeToThatRecyclerViewBiatch();
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError error) {
+//
+//            }
+//        });
+        mTasksList.addChildEventListener(new ChildEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
+            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                for (DataSnapshot snapCreator : snapshot.getChildren()) {
+                    if (snapCreator.getKey().equals("creator") && snapCreator.getValue().equals(FirebaseAuth.getInstance().getUid())) {
+                        userTasksList.add(snapshot.getValue(TaskList.class));
+                    }
+                }
+                for (DataSnapshot snapParticipant : snapshot.child("participant").getChildren()) {
+                    if (snapParticipant.getKey().equals(FirebaseAuth.getInstance().getUid())) {
+                        userTasksList.add(snapshot.getValue(TaskList.class));
+                    }
+                }
+                sendSomeToThatRecyclerViewBiatch();
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                 userTasksList.clear();
                 for (DataSnapshot snapCreator : snapshot.getChildren()) {
-                    if (snapCreator.child("creator").getValue().toString().equals(FirebaseAuth.getInstance().getUid())) {
-                        userTasksList.add(snapCreator.getValue(TaskList.class));
+                    if (snapCreator.getKey().equals("creator") && snapCreator.getValue().equals(FirebaseAuth.getInstance().getUid())) {
+                        userTasksList.add(snapshot.getValue(TaskList.class));
                     }
-                    for (DataSnapshot snapParticipant : snapCreator.child("participant").getChildren()) {
-                        if (snapParticipant.getKey().equals(FirebaseAuth.getInstance().getUid())) {
-                            userTasksList.add(snapCreator.getValue(TaskList.class));
-                        }
+                }
+                for (DataSnapshot snapParticipant : snapshot.child("participant").getChildren()) {
+                    if (snapParticipant.getKey().equals(FirebaseAuth.getInstance().getUid())) {
+                        userTasksList.add(snapshot.getValue(TaskList.class));
+                    }
+                }
+                sendSomeToThatRecyclerViewBiatch();
+            }
+
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
+                userTasksList.clear();
+                for (DataSnapshot snapCreator : snapshot.getChildren()) {
+                    if (snapCreator.getKey().equals("creator") && snapCreator.getValue().equals(FirebaseAuth.getInstance().getUid())) {
+                        userTasksList.add(snapshot.getValue(TaskList.class));
+                    }
+                }
+                for (DataSnapshot snapParticipant : snapshot.child("participant").getChildren()) {
+                    if (snapParticipant.getKey().equals(FirebaseAuth.getInstance().getUid())) {
+                        userTasksList.add(snapshot.getValue(TaskList.class));
+                    }
+                }
+                sendSomeToThatRecyclerViewBiatch();
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                userTasksList.clear();
+                for (DataSnapshot snapCreator : snapshot.getChildren()) {
+                    if (snapCreator.getKey().equals("creator") && snapCreator.getValue().equals(FirebaseAuth.getInstance().getUid())) {
+                        userTasksList.add(snapshot.getValue(TaskList.class));
+                    }
+                }
+                for (DataSnapshot snapParticipant : snapshot.child("participant").getChildren()) {
+                    if (snapParticipant.getKey().equals(FirebaseAuth.getInstance().getUid())) {
+                        userTasksList.add(snapshot.getValue(TaskList.class));
                     }
                 }
                 sendSomeToThatRecyclerViewBiatch();
@@ -108,7 +182,6 @@ public class MyListsFragment extends Fragment implements TaskListAdapter.OnTaskL
 
     @Override
     public void onPause() {
-        Log.d(TAG, "et zou onPause()");
         super.onPause();
 
         // save RecyclerView state
@@ -121,7 +194,6 @@ public class MyListsFragment extends Fragment implements TaskListAdapter.OnTaskL
 
     @Override
     public void onResume() {
-        Log.d(TAG, "et zou onResume()");
         super.onResume();
 
         // restore RecyclerView state

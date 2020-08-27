@@ -1,6 +1,5 @@
 package com.darkjp.todo;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,16 +18,16 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.List;
 
 public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskListViewHolder> {
-    private  List<TaskList> taskLists;
+    private List<TaskList> taskLists;
     private OnTaskListClickListener mOnTaskListClickListener;
 
     private final String TAG = "TaskListAdapter";
 
-    public static class TaskListViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    public static class TaskListViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private TextView title, creator, by;
         OnTaskListClickListener onTaskListClickListener;
 
-        public TaskListViewHolder(@NonNull View itemView,  OnTaskListClickListener onTaskListClickListener) {
+        public TaskListViewHolder(@NonNull View itemView, OnTaskListClickListener onTaskListClickListener) {
             super(itemView);
             title = itemView.findViewById(R.id.row_task_list_title);
             by = itemView.findViewById(R.id.row_task_list_by);
@@ -44,7 +43,7 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskLi
         }
     }
 
-    public TaskListAdapter(List<TaskList> taskLists, OnTaskListClickListener onTaskListClickListener){
+    public TaskListAdapter(List<TaskList> taskLists, OnTaskListClickListener onTaskListClickListener) {
         this.taskLists = taskLists;
         this.mOnTaskListClickListener = onTaskListClickListener;
     }
@@ -62,7 +61,7 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskLi
         TaskList taskList = taskLists.get(position);
         if (taskList != null)
             holder.title.setText(taskList.getTitle());
-        if (taskList.getCreator()!= null && !taskList.getCreator().equals("") && !taskList.getCreator().equals(FirebaseAuth.getInstance().getUid())) {
+        if (taskList.getCreator() != null && !taskList.getCreator().equals("") && !taskList.getCreator().equals(FirebaseAuth.getInstance().getUid())) {
             FirebaseDatabase database = FirebaseDatabase.getInstance();
             DatabaseReference mRef = database.getReference("user/" + taskList.getCreator());
             mRef.addValueEventListener(new ValueEventListener() {
@@ -90,5 +89,4 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskLi
     public interface OnTaskListClickListener {
         void onTaskClick(int position);
     }
-
 }

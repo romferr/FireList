@@ -10,17 +10,18 @@
     >
 
     <LinearLayout
+        android:id="@+id/fragment_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         >
-        <fragment
+        <androidx.fragment.app.FragmentContainerView
             android:id="@+id/fragment_header"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:name="com.darkjp.todo.HeaderFragment"
             android:layout_margin="3dp">
-        </fragment>
+        </androidx.fragment.app.FragmentContainerView>
 
 
         <FrameLayout android:id="@+id/listFragment"
@@ -28,13 +29,13 @@
             android:layout_height="wrap_content"
             />
 
-        <fragment
+        <androidx.fragment.app.FragmentContainerView
             android:id="@+id/fragment_footer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:name="com.darkjp.todo.FooterFragment"
             android:layout_margin="3dp">
-        </fragment>
+        </androidx.fragment.app.FragmentContainerView>
     </LinearLayout>
 </LinearLayout>
 

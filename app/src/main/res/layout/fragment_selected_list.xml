@@ -10,6 +10,15 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="@style/tallerBarStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:max="100"
+            android:visibility="gone"
+            android:progressTint="#A30707"/>
+
         <TextView
             android:id="@+id/fragment_selectedList_txt_title"
             android:layout_width="match_parent"

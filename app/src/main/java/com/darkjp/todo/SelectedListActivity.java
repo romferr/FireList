@@ -102,7 +102,7 @@ public class SelectedListActivity extends AppCompatActivity implements TaskAdapt
 
                         for (DataSnapshot snap : snapshot.child("task").getChildren()) {
                             tasks.add(snap.getValue(Task.class));
-                            sendSomeToThatRecyclerViewBiatch(tasks);
+                            sendSomeToThatRecyclerViewBiatch(listId, tasks);
                         }
                         if (snapshot.child("participant") != null) {
                             for (DataSnapshot snapParticipant : snapshot.child("participant").getChildren()) {
@@ -142,7 +142,7 @@ public class SelectedListActivity extends AppCompatActivity implements TaskAdapt
         }
     }
 
-    private void sendSomeToThatRecyclerViewBiatch(ArrayList<Task> tasks) {
+    private void sendSomeToThatRecyclerViewBiatch(String listId, ArrayList<Task> tasks) {
         if (tasks != null) {
             // RECYCLER VIEW LIST TO SELECT
             // init
@@ -150,7 +150,7 @@ public class SelectedListActivity extends AppCompatActivity implements TaskAdapt
             tasksRecyclerView.setHasFixedSize(true);
             layoutManager = new LinearLayoutManager(SelectedListActivity.this);
             tasksRecyclerView.setLayoutManager(layoutManager);
-            taskAdapter = new TaskAdapter(tasks, this);
+            taskAdapter = new TaskAdapter(listId, tasks, this);
             tasksRecyclerView.setAdapter(taskAdapter);
         } else {
             Toast.makeText(this, "No list yet", Toast.LENGTH_SHORT).show();

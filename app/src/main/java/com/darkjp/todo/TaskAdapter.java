@@ -118,10 +118,14 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
                     }
                 });
 
-                mDelete.child("task/" + position).addValueEventListener(new ValueEventListener() {
+                mDelete.child("task").addValueEventListener(new ValueEventListener() {
                     @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        tempTask.remove(position);
+                    public void onDataChange(@NonNull DataSnapshot snap) {
+                        for (DataSnapshot snapshot : snap.getChildren()) {
+                            if (snapshot.child("id").getValue().equals(tempTask.get(position).getId())) {
+                                snapshot.getRef().removeValue();
+                            }
+                        }
                     }
 
                     @Override
@@ -129,7 +133,6 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
 
                     }
                 });
-                mDelete.child("task").setValue(tempTask);
                 notifyDataSetChanged();
             }
         });

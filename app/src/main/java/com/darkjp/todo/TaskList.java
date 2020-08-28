@@ -86,7 +86,7 @@ public class TaskList implements Parcelable {
     @Override
     public String toString() {
         return "TaskList{" +
-                "id='" + id +'\'' +
+                "id='" + id + '\'' +
                 "title='" + title + '\'' +
                 ", author='" + creator + '\'' +
                 ", tasks=" + task +

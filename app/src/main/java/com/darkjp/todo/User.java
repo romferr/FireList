@@ -5,7 +5,7 @@ import java.util.Objects;
 
 public class User {
     private String id, pseudo, email, imgProfile;
-    private ArrayList <String> taskList;
+    private ArrayList<String> taskList;
 
     public User() {
     }

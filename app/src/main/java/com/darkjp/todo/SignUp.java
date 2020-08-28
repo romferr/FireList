@@ -65,17 +65,17 @@ public class SignUp extends AppCompatActivity {
                 String userEmail = email.getText().toString();
                 String userPassword = password.getText().toString();
 
-                if (userPseudo.equals("")){
+                if (userPseudo.equals("")) {
                     Toast.makeText(SignUp.this, "Please enter a pseudo", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
-                if (userEmail.equals("") || !userEmail.contains("@") || !userEmail.contains(".")){
+                if (userEmail.equals("") || !userEmail.contains("@") || !userEmail.contains(".")) {
                     Toast.makeText(SignUp.this, "Please enter a valid email", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
-                if (userPassword.length() < 8 ){
+                if (userPassword.length() < 8) {
                     Toast.makeText(SignUp.this, "Password needs at least 8 characters", Toast.LENGTH_SHORT).show();
                     return;
                 }

@@ -1,12 +1,8 @@
 package com.darkjp.todo;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -14,14 +10,11 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -72,16 +65,16 @@ public class TaskListActivity extends AppCompatActivity {
         newTaskTitle.setLayoutParams(params);
         newTaskTitle.setText("Task title: ");
         newTaskTitle.setTypeface(Typeface.DEFAULT_BOLD);
-        newTaskTitle.layout(5, 5, 5, 5 );
+        newTaskTitle.layout(5, 5, 5, 5);
         newTaskTitleInput = new EditText(TaskListActivity.this);
         newTaskTitleInput.setLayoutParams(params);
         newTaskTitleInput.setText("");
         newTaskTitleInput.setBackgroundColor(Color.parseColor("#FFD5D5D6"));
-         TextView newTaskDescription = new TextView(TaskListActivity.this);
+        TextView newTaskDescription = new TextView(TaskListActivity.this);
         newTaskDescription.setLayoutParams(params);
         newTaskDescription.setText("Task description: ");
         newTaskDescription.setTypeface(Typeface.DEFAULT_BOLD);
-        newTaskDescription.layout(5, 5, 5, 5 );
+        newTaskDescription.layout(5, 5, 5, 5);
         newTaskDescriptionInput = new EditText(TaskListActivity.this);
         newTaskDescriptionInput.setLayoutParams(params);
         newTaskDescriptionInput.setText("");
@@ -109,12 +102,12 @@ public class TaskListActivity extends AppCompatActivity {
         newTask.setTitle(newTaskTitleInput.getText().toString());
         newTask.setDescription(newTaskDescriptionInput.getText().toString());
         newTask.setDone(false);
-        if (newTasksList.getTask() != null && !newTasksList.getTask().contains(newTask)){
+        if (newTasksList.getTask() != null && !newTasksList.getTask().contains(newTask)) {
             newTasksList.getTask().add(newTask);
         }
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference mTasklist = database.getReference("tasksList/"+ newTasksList.getId());
+        DatabaseReference mTasklist = database.getReference("tasksList/" + newTasksList.getId());
         mTasklist.setValue(newTasksList);
     }
 }

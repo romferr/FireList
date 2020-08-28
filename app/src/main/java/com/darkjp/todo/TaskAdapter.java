@@ -1,5 +1,6 @@
 package com.darkjp.todo;
 
+import android.provider.ContactsContract;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -100,20 +101,35 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
         holder.deleteTask.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                final ArrayList<Task> tempTask = new ArrayList();
                 FirebaseDatabase database = FirebaseDatabase.getInstance();
-                DatabaseReference mDelete = database.getReference("tasksList/" + listId).child("task/" + position);
-                mDelete.removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                DatabaseReference mDelete = database.getReference("tasksList/" + listId);
+                mDelete.addValueEventListener(new ValueEventListener() {
                     @Override
-                    public void onSuccess(Void aVoid) {
-                        System.out.println("YOYOYOYO");
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        for (DataSnapshot snap : snapshot.child("task").getChildren()){
+                            tempTask.add(snap.getValue(Task.class));
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
 
                     }
-                }).addOnFailureListener(new OnFailureListener() {
+                });
+
+                mDelete.child("task/" + position).addValueEventListener(new ValueEventListener() {
                     @Override
-                    public void onFailure(@NonNull Exception e) {
-                        System.out.println("Something went terribly wrong !\nThe task has not been deleted");
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        tempTask.remove(position);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
                     }
                 });
+                mDelete.child("task").setValue(tempTask);
                 notifyDataSetChanged();
             }
         });

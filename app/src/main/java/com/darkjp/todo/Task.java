@@ -4,18 +4,21 @@ import java.util.Objects;
 
 public class Task {
 
+    private boolean done;
     private String title;
     private String creator;
     private String description;
-    private boolean done;
+    private String id;
 
-    public Task (){}
+    public Task() {
+    }
 
     public Task(String title) {
         this.title = title;
         this.creator = "";
         this.description = "";
         this.done = false;
+        this.id = "";
     }
 
     public String getTitle() {
@@ -50,6 +53,14 @@ public class Task {
         this.done = done;
     }
 
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -58,18 +69,20 @@ public class Task {
         return done == task.done &&
                 Objects.equals(title, task.title) &&
                 Objects.equals(creator, task.creator) &&
-                Objects.equals(description, task.description);
+                Objects.equals(description, task.description) &&
+                Objects.equals(id, task.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(title, creator, description, done);
+        return Objects.hash(title, creator, description, done, id);
     }
 
     @Override
     public String toString() {
         return "Task{" +
-                "nom='" + title + '\'' +
+                "title='" + title + '\'' +
+                ", id='" + id + '\'' +
                 ", creator='" + creator + '\'' +
                 ", description='" + description + '\'' +
                 ", done=" + done +

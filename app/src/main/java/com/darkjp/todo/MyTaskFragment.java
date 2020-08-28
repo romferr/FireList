@@ -4,10 +4,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -65,33 +63,37 @@ public class MyTaskFragment extends Fragment {
             /**
              * check the task to complete fieds
              */
-            final DatabaseReference mSelectedTask = database.getReference("tasksList/" + taskListIndex).child("task/" + taskIndex);
+            final DatabaseReference mSelectedTask = database.getReference("tasksList/" + taskListIndex).child("task");
             mSelectedTask.addValueEventListener(new ValueEventListener() {
                 @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    if (snapshot.child("title").getValue() != null && !snapshot.child("title").getValue().equals(""))
-                        title.setText(snapshot.child("title").getValue().toString() + " :");
-                    if (snapshot.child("description").getValue() != null && !snapshot.child("description").getValue().equals(""))
-                        description.setText(snapshot.child("description").getValue().toString());
-                    if (snapshot.child("done") != null && snapshot.child("done").getValue().toString().equals("true"))
-                        isDoneCheckBox.setChecked(true);
-                    if (snapshot.child("creator").getValue() != null && !snapshot.child("creator").getValue().toString().equals("") && !snapshot.child("creator").getValue().toString().equals(FirebaseAuth.getInstance().getUid())) {
-                        DatabaseReference mCreator = database.getReference("user/" + snapshot.child("creator").getValue().toString()).child("pseudo");
-                        mCreator.addValueEventListener(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                if (snapshot.getValue() != null && !snapshot.getValue().equals(""))
-                                    creator.setText(snapshot.getValue(String.class));
-                            }
+                public void onDataChange(@NonNull DataSnapshot snap) {
+                    for (DataSnapshot snapshot : snap.getChildren()) {
+                        if (snapshot.child("id").getValue().equals(taskIndex)) {
+                            if (snapshot.child("title").getValue() != null && !snapshot.child("title").getValue().equals(""))
+                                title.setText(snapshot.child("title").getValue().toString() + " :");
+                            if (snapshot.child("description").getValue() != null && !snapshot.child("description").getValue().equals(""))
+                                description.setText(snapshot.child("description").getValue().toString());
+                            if (snapshot.child("done") != null && snapshot.child("done").getValue().toString().equals("true"))
+                                isDoneCheckBox.setChecked(true);
+                            if (snapshot.child("creator").getValue() != null && !snapshot.child("creator").getValue().toString().equals("") && !snapshot.child("creator").getValue().toString().equals(FirebaseAuth.getInstance().getUid())) {
+                                DatabaseReference mCreator = database.getReference("user/" + snapshot.child("creator").getValue().toString()).child("pseudo");
+                                mCreator.addValueEventListener(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                        if (snapshot.getValue() != null && !snapshot.getValue().equals(""))
+                                            creator.setText(snapshot.getValue(String.class));
+                                    }
 
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError error) {
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError error) {
 
+                                    }
+                                });
+                            } else {
+                                creator.setText("");
+                                by.setText("");
                             }
-                        });
-                    } else {
-                        creator.setText("");
-                        by.setText("");
+                        }
                     }
                 }
 
@@ -107,23 +109,31 @@ public class MyTaskFragment extends Fragment {
         isDoneCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                final DatabaseReference mDone = database.getReference("tasksList/" + taskListIndex).child("task/" + taskIndex);
+                final DatabaseReference mDone = database.getReference("tasksList/" + taskListIndex).child("task");
                 mDone.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        Task updateTask = new Task();
-                        if (snapshot.child("creator").getValue() != null) {
-                            if (snapshot.child("creator").getValue().toString().equals(""))
-                                updateTask.setCreator("no creator found");
-                            updateTask.setCreator(snapshot.child("creator").getValue().toString());
+                    public void onDataChange(@NonNull DataSnapshot snap) {
+                        for (DataSnapshot snapshot : snap.getChildren()) {
+                            if (snapshot.child("id").getValue().equals(taskIndex)) {
+                                System.out.println("LAST BUT NOT LEAST :" + snapshot);
+                                Task updateTask = new Task();
+                                if (snapshot.child("id").getValue() != null && !snapshot.child("id").getValue().equals("")) {
+                                    updateTask.setId(taskIndex);
+                                }
+                                if (snapshot.child("creator").getValue() != null) {
+                                    if (snapshot.child("creator").getValue().toString().equals(""))
+                                        updateTask.setCreator("no creator found");
+                                    updateTask.setCreator(snapshot.child("creator").getValue().toString());
+                                }
+                                if (snapshot.child("title").getValue() != null && !snapshot.child("title").getValue().toString().equals(""))
+                                    updateTask.setTitle(snapshot.child("title").getValue().toString());
+                                if (snapshot.child("description").getValue() != null && !snapshot.child("description").getValue().toString().equals(""))
+                                    updateTask.setDescription(snapshot.child("description").getValue().toString());
+                                if (snapshot.child("done").getValue() != null)
+                                    updateTask.setDone(isDoneCheckBox.isChecked());
+                                snapshot.getRef().setValue(updateTask);
+                            }
                         }
-                        if (snapshot.child("title").getValue() != null && !snapshot.child("title").getValue().toString().equals(""))
-                            updateTask.setTitle(snapshot.child("title").getValue().toString());
-                        if (snapshot.child("description").getValue() != null && !snapshot.child("description").getValue().toString().equals(""))
-                            updateTask.setDescription(snapshot.child("description").getValue().toString());
-                        if (snapshot.child("done").getValue() != null)
-                            updateTask.setDone(isDoneCheckBox.isChecked());
-                        mDone.setValue(updateTask);
                     }
 
                     @Override

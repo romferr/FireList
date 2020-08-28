@@ -2,14 +2,11 @@ package com.darkjp.todo;
 
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -18,7 +15,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.DividerItemDecoration;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseError;
@@ -40,7 +36,7 @@ public class NewTaskListAndTasksFragment extends Fragment {
     private TaskList newTasksList = new TaskList();
     private User userUpdate = new User();
     private View view;
-    
+
     private static int newTaskId = 0;
 
     @Override
@@ -131,7 +127,7 @@ public class NewTaskListAndTasksFragment extends Fragment {
     private void saveTask() {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference mTasklist = database.getReference("tasksList/" + newTasksList.getId());
-        for (Map.Entry mapEntry : listOfEditText.entrySet()){
+        for (Map.Entry mapEntry : listOfEditText.entrySet()) {
             Task newTask = new Task();
             newTask.setCreator(FirebaseAuth.getInstance().getUid());
             EditText eTitle = (EditText) mapEntry.getKey();
@@ -143,7 +139,7 @@ public class NewTaskListAndTasksFragment extends Fragment {
             newTask.setDone(false);
             if (newTasksList.getTask() != null && !newTasksList.getTask().contains(newTask)) {
                 newTasksList.getTask().add(newTask);
-                System.out.println("newTask "+ newTasksList.getTask().size());
+                System.out.println("newTask " + newTasksList.getTask().size());
             }
         }
         mTasklist.setValue(newTasksList, new DatabaseReference.CompletionListener() {

@@ -2,7 +2,6 @@ package com.darkjp.todo;
 
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +11,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -43,6 +41,7 @@ public class SelectedListFragment extends Fragment implements TaskAdapter.OnTask
     private static final String TAG = "SelectedListFragment";
     private static Bundle mBundleRecyclerViewState;
     private final String KEY_RECYCLER_STATE = "recycler_state";
+    final String[] uuid = {""};
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -79,13 +78,15 @@ public class SelectedListFragment extends Fragment implements TaskAdapter.OnTask
                         sendSomeToThatRecyclerViewBiatch(listId, tasks);
                     }
                 }
-                if (done != 0 || counter !=0) {
+                if (done != 0 || counter != 0) {
                     progressBar.setVisibility(View.VISIBLE);
                     progressBar.setProgress((100 * done) / counter, true);
                 } else {
                     progressBar.setProgress(0, true);
                     progressBar.setVisibility(View.GONE);
                 }
+
+
             }
 
             @Override
@@ -114,19 +115,32 @@ public class SelectedListFragment extends Fragment implements TaskAdapter.OnTask
     }
 
     @Override
-    public void onTaskClick(int position) {
-        Bundle taskToBeDone = new Bundle();
-        taskToBeDone.putString("task", String.valueOf(position));
-        taskToBeDone.putString("task_List_index", String.valueOf(listId));
-        taskToBeDone.putString("father_tasksList_title", title.getText().toString());
+    public void onTaskClick(final int position) {
+        DatabaseReference mTask = database.getReference("tasksList/" + listId).child("task/" + tasks.get(position).getId());
+        mTask.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                uuid[0] = snapshot.getKey();
+                System.out.println("uuid ----> " + uuid);
+                Bundle taskToBeDone = new Bundle();
+                taskToBeDone.putString("task", String.valueOf(uuid[0]));
+                taskToBeDone.putString("task_List_index", String.valueOf(listId));
+                taskToBeDone.putString("father_tasksList_title", title.getText().toString());
 
-        MyTaskFragment myTaskFragment = new MyTaskFragment();
-        myTaskFragment.setArguments(taskToBeDone);
+                MyTaskFragment myTaskFragment = new MyTaskFragment();
+                myTaskFragment.setArguments(taskToBeDone);
 
-        FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.listFragment, myTaskFragment);
-        fragmentTransaction.addToBackStack(null);
-        fragmentTransaction.commit();
+                FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
+                fragmentTransaction.replace(R.id.listFragment, myTaskFragment);
+                fragmentTransaction.addToBackStack(null);
+                fragmentTransaction.commit();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
 
     @Override
@@ -135,7 +149,7 @@ public class SelectedListFragment extends Fragment implements TaskAdapter.OnTask
 
         // save RecyclerView state
         mBundleRecyclerViewState = new Bundle();
-        if (tasksRecyclerView != null ) {
+        if (tasksRecyclerView != null) {
             Parcelable listState = tasksRecyclerView.getLayoutManager().onSaveInstanceState();
             mBundleRecyclerViewState.putParcelable(KEY_RECYCLER_STATE, listState);
         }

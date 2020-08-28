@@ -117,7 +117,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snap) {
                         for (DataSnapshot snapshot : snap.getChildren()) {
-                            if (snapshot.child("id").getValue().equals(tempTask.get(position).getId())) {
+                            if (snapshot.child("id").getValue() != null && snapshot.child("id").getValue().equals(tempTask.get(position).getId())) {
                                 snapshot.getRef().removeValue();
                             }
                         }

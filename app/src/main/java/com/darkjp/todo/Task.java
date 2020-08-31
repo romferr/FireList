@@ -13,12 +13,12 @@ public class Task {
     public Task() {
     }
 
-    public Task(String title) {
+    public Task(String title, String uuid) {
         this.title = title;
         this.creator = "";
         this.description = "";
         this.done = false;
-        this.id = "";
+        this.id = uuid;
     }
 
     public String getTitle() {

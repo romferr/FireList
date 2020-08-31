@@ -100,7 +100,7 @@ public class NewTaskListAndTasksFragment extends Fragment {
         params.setMargins(5, 5, 5, 10);
         TextView newTaskTitle = new TextView(view.getContext());
         newTaskTitle.setLayoutParams(params);
-        newTaskTitle.setText("Task title: ");
+        newTaskTitle.setText(R.string.newTaskTitleLabel);
         newTaskTitle.setTypeface(Typeface.DEFAULT_BOLD);
         newTaskTitle.layout(5, 5, 5, 5);
         newTaskTitleInput = new EditText(view.getContext());
@@ -109,7 +109,7 @@ public class NewTaskListAndTasksFragment extends Fragment {
         newTaskTitleInput.setBackgroundColor(Color.parseColor("#FFD5D5D6"));
         TextView newTaskDescription = new TextView(view.getContext());
         newTaskDescription.setLayoutParams(params);
-        newTaskDescription.setText("Task description: ");
+        newTaskDescription.setText(R.string.newtaskDescriptionLabel);
         newTaskDescription.setTypeface(Typeface.DEFAULT_BOLD);
         newTaskDescription.layout(5, 5, 5, 5);
         newTaskDescriptionInput = new EditText(view.getContext());
@@ -129,6 +129,8 @@ public class NewTaskListAndTasksFragment extends Fragment {
         DatabaseReference mTasklist = database.getReference("tasksList/" + newTasksList.getId());
         for (Map.Entry mapEntry : listOfEditText.entrySet()) {
             Task newTask = new Task();
+            String uuid = UUID.randomUUID().toString();
+            newTask.setId(uuid);
             newTask.setCreator(FirebaseAuth.getInstance().getUid());
             EditText eTitle = (EditText) mapEntry.getKey();
             System.out.println(eTitle);
@@ -139,7 +141,6 @@ public class NewTaskListAndTasksFragment extends Fragment {
             newTask.setDone(false);
             if (newTasksList.getTask() != null && !newTasksList.getTask().contains(newTask)) {
                 newTasksList.getTask().add(newTask);
-                System.out.println("newTask " + newTasksList.getTask().size());
             }
         }
         mTasklist.setValue(newTasksList, new DatabaseReference.CompletionListener() {

@@ -25,4 +25,6 @@
     <string name="row_task_name">Nom</string>
     <string name="row_task_edit_img">Edit</string>
     <string name="row_task_delete_img">delete</string>
+    <string name="newTaskTitleLabel">\"Task title: \"</string>
+    <string name="newtaskDescriptionLabel">\"Task description: \"</string>
 </resources>

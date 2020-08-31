@@ -47,7 +47,8 @@
                 android:layout_weight="1"
                 android:background="@color/background"
                 android:scaleType="centerCrop"
-                android:src="@drawable/ic_baseline_control_point_24" />
+                android:src="@drawable/ic_baseline_control_point_24"
+                android:visibility="visible" />
 
             <ImageButton
                 android:id="@+id/fragment_footer_user_profile"

@@ -1,0 +1,28 @@
+<resources>
+    <string name="app_name">SharedList</string>
+    <string name="action_settings">Settings</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+
+    <string name="hello_first_fragment">Hello first fragment</string>
+    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+    <string name="password">Password :</string>
+    <string name="email">eMail :</string>
+    <string name="log_in">Log In</string>
+    <string name="pseudo">Pseudo</string>
+    <string name="btn_register">REGISTER</string>
+    <string name="dash_log_out">LOG OUT</string>
+    <string name="selected_list_participant">Participant(s)</string>
+    <string name="selected_list_title">TITLE</string>
+    <string name="retour">BACK</string>
+    <string name="new_task">new task</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="row_task_by">by</string>
+    <string name="row_task_name">Nom</string>
+    <string name="row_task_edit_img">Edit</string>
+    <string name="row_task_delete_img">delete</string>
+</resources>

@@ -16,21 +16,35 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:max="100"
-            android:visibility="gone"
+            android:visibility="visible"
             android:progressTint="#A30707"/>
 
-        <TextView
-            android:id="@+id/fragment_selectedList_txt_title"
+        <HorizontalScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="3dp"
-            android:gravity="center"
-            android:textSize="20dp"
-            android:textStyle="bold" />
+            android:layout_marginHorizontal="25dp">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/fragment_selectedList_txt_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="3dp"
+                    android:gravity="center"
+                    android:textSize="20dp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+        </HorizontalScrollView>
+
+
 
         <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="470dp"
+            android:layout_height="480dp"
             android:layout_gravity="center_horizontal">
 
             <LinearLayout

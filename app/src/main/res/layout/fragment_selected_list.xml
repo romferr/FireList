@@ -40,25 +40,22 @@
             </LinearLayout>
         </HorizontalScrollView>
 
-
-
         <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="480dp"
+        android:layout_gravity="center_horizontal">
+
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="480dp"
-            android:layout_gravity="center_horizontal">
+            android:layout_height="wrap_content"
+            android:layout_margin="3dp"
+            android:orientation="vertical">
 
-            <LinearLayout
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/fragment_selected_list_recyclerView"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="3dp"
-                android:orientation="vertical">
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/fragment_selected_list_recyclerView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
-            </LinearLayout>
+                android:layout_height="wrap_content" />
+        </LinearLayout>
         </ScrollView>
     </LinearLayout>
-
 </FrameLayout>

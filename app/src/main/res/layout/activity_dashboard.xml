@@ -9,34 +9,38 @@
     android:orientation="vertical"
     >
 
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:orientation="vertical"
         >
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/fragment_header"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="120dp"
             android:name="com.darkjp.todo.HeaderFragment"
-            android:layout_margin="3dp">
+            android:layout_margin="3dp"
+            tools:ignore="NotSibling">
         </androidx.fragment.app.FragmentContainerView>
 
-
-        <FrameLayout android:id="@+id/listFragment"
+        <FrameLayout
+            android:id="@+id/listFragment"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            />
+            android:layout_height="500dp"
+            android:layout_below="@+id/fragment_header"
+            android:layout_alignParentEnd="true" />
 
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/fragment_footer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
             android:name="com.darkjp.todo.FooterFragment"
-            android:layout_margin="3dp">
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:layout_alignBottom="@id/listFragment"
+            android:layout_marginBottom="-45dp"
+            tools:ignore="NotSibling">
         </androidx.fragment.app.FragmentContainerView>
-    </LinearLayout>
+    </RelativeLayout>
 </LinearLayout>
 
 

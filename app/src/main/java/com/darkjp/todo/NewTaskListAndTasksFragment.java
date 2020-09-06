@@ -1,5 +1,7 @@
 package com.darkjp.todo;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -9,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,6 +36,7 @@ public class NewTaskListAndTasksFragment extends Fragment {
     private HashMap<EditText, EditText> listOfEditText;
     private ImageButton backButton, newTaskFieldButton, saveButton;
     private LinearLayout newTaskZone, menu;
+    private Switch editTitleSwitch;
     private TaskList newTasksList = new TaskList();
     private User userUpdate = new User();
     private View view;
@@ -50,9 +54,8 @@ public class NewTaskListAndTasksFragment extends Fragment {
         if (container != null) {
             container.removeAllViews();
         }
-
+        editTitleSwitch = view.findViewById(R.id.fragment_new_task_list_switch_edit_title);
         newListTitle = view.findViewById(R.id.fragment_new_task_list_tasksList_title);
-        backButton = view.findViewById(R.id.fragment_new_task_back_button);
         newTaskFieldButton = view.findViewById(R.id.fragment_new_add_task_field);
         saveButton = view.findViewById(R.id.fragment_new_add_task_save_button);
         newTaskZone = view.findViewById(R.id.fragment_new_task_list_new_task_zone);
@@ -78,15 +81,17 @@ public class NewTaskListAndTasksFragment extends Fragment {
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                saveTask();
-                newTaskZone.removeAllViews();
+                if (newListTitle.getText() != null && !newListTitle.getText().equals("")) {
+                    saveTask();
+                    newTaskZone.removeAllViews();
+                }
             }
         });
 
-        backButton.setOnClickListener(new View.OnClickListener() {
+        editTitleSwitch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getActivity().finish();
+                newListTitle.setEnabled(editTitleSwitch.isChecked());
             }
         });
 
@@ -116,11 +121,13 @@ public class NewTaskListAndTasksFragment extends Fragment {
         newTaskDescriptionInput.setLayoutParams(params);
         newTaskDescriptionInput.setText("");
         newTaskDescriptionInput.setBackgroundColor(Color.parseColor("#FFD5D5D6"));
-        saveButton.setVisibility(View.VISIBLE);
         newTaskZone.addView(newTaskTitle);
         newTaskZone.addView(newTaskTitleInput);
         newTaskZone.addView(newTaskDescription);
         newTaskZone.addView(newTaskDescriptionInput);
+        newListTitle.setEnabled(false);
+        editTitleSwitch.setVisibility(View.VISIBLE);
+        saveButton.setVisibility(View.VISIBLE);
         listOfEditText.put(newTaskTitleInput, newTaskDescriptionInput);
     }
 
@@ -161,4 +168,5 @@ public class NewTaskListAndTasksFragment extends Fragment {
     public void onResume() {
         super.onResume();
     }
+
 }

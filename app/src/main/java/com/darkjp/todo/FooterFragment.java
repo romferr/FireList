@@ -46,6 +46,14 @@ public class FooterFragment extends Fragment {
             }
         });
 
+        myContacts.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(view.getContext(), "my contacts", Toast.LENGTH_SHORT).show();
+
+            }
+        });
+
         newList.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -56,6 +64,14 @@ public class FooterFragment extends Fragment {
                 fragmentTransaction.addToBackStack(null);
                 fragmentTransaction.commit();
                 }
+        });
+
+        myProfile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(view.getContext(), "my profile", Toast.LENGTH_SHORT).show();
+
+            }
         });
 
 

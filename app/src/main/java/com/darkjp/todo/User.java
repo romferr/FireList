@@ -5,7 +5,7 @@ import java.util.Objects;
 
 public class User {
     private String id, pseudo, email, imgProfile;
-    private ArrayList<String> taskList;
+    private ArrayList<String> taskList, friends;
 
     public User() {
     }
@@ -15,6 +15,7 @@ public class User {
         this.pseudo = pseudo;
         this.email = email;
         this.taskList = new ArrayList<>();
+        this.friends = new ArrayList<>();
     }
 
     public String getId() {
@@ -57,12 +58,21 @@ public class User {
         this.taskList = taskList;
     }
 
+    public ArrayList<String> getFriends() {
+        return friends;
+    }
+
+    public void setFriends(ArrayList<String> friends) {
+        this.friends = friends;
+    }
+
     @Override
     public String toString() {
         return "User{" +
                 "id='" + id + '\'' +
                 ", pseudo='" + pseudo + '\'' +
                 ", email='" + email + '\'' +
+                ", friends='" + friends.size() + '\'' +
                 '}';
     }
 
